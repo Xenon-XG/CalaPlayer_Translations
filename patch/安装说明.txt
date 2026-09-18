@@ -1,0 +1,23 @@
+CalaPlayer 简体中文汉化 Mod
+================================
+
+【内容】
+  将 CalaPlayer 的英文界面汉化为简体中文——主菜单、编辑器、
+  各面板/标签、按钮、下拉框、弹窗、时间轴等界面文字全部中文。
+
+【安装】
+  把下面 3 个文件复制到游戏目录里的  CalaPlayer\Content\Paks\  文件夹：
+      CalaPlayer-Windows_P.utoc
+      CalaPlayer-Windows_P.ucas
+      CalaPlayer-Windows_P.pak
+  然后启动游戏即为中文。
+  注：首次启动可能因编译着色器短暂显示“无响应”，等一会儿即可，属正常现象。
+
+【卸载 / 还原英文】
+  删除上面这 3 个 CalaPlayer-Windows_P.* 文件即可，游戏恢复英文。
+
+【说明】
+  - 不改动任何原始游戏文件，只新增一个高优先级补丁包(_P)，安全、可逆。
+  - 仅适用于对应版本的 CalaPlayer（Unreal Engine 5.7 构建）。
+    游戏若更新导致界面资源改变，可能需要重新制作。
+  - 剧本名、分类名(如 LEMONS)等属于你自己的存档数据，不在汉化范围内。

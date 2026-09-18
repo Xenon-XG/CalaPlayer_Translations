@@ -1,0 +1,1028 @@
+[
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_CharacterEntry.uasset",
+    "Export": "TextBlock",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "A5AFDD2949B3C69ABA4337AD0C5D25E3",
+    "Source": "Skin"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_CharacterEntry.uasset",
+    "Export": "TextBlock",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "EC2D9E1D46BCFD450FAE57A2A6FA391A",
+    "Source": "Color"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_CharacterEntry.uasset",
+    "Export": "TextBlock_Name",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "B0FE0E53421E32EFBB7FF38A32CE62CD",
+    "Source": "CharacterName"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_CharacterEntry.uasset",
+    "Export": "TextBlock_SkinID",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "9060EAEC4FBD0F2B974F3ABFC5C32BCB",
+    "Source": "SkinID"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_ColorPicker.uasset",
+    "Export": "TextBlock",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "FD2F035D4FF737BADE5957B2DFBDEF8D",
+    "Source": "Set color"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_ColorPicker.uasset",
+    "Export": "TextBlock",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "0A54244043F15A0AC1401685D8D2CD91",
+    "Source": "Cancel"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_ColorPicker.uasset",
+    "Export": "TextBlock",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "89FB438A40CC52DED86AD1A64D70E214",
+    "Source": "Change Color"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_ColorPreset.uasset",
+    "Export": "TextBlock",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "UMG",
+    "Key": "TextBlockDefaultValue",
+    "Source": "Text Block"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_CreateCharacterPopup.uasset",
+    "Export": "TextBlock",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "417E06784EFFC6BBE1CCF19545834AE0",
+    "Source": "Character"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_CreateCharacterPopup.uasset",
+    "Export": "TextBlock",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "BA78D45640E0D0C95E3ED28DC6410AAE",
+    "Source": "Skin"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_CreateCharacterPopup.uasset",
+    "Export": "TextBlock",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "A38933124BCA77B506482EA8B51C1E5B",
+    "Source": "Color"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_CreateCharacterPopup.uasset",
+    "Export": "TextBlock",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "26E1E984417BF223995B728C3B6B8C54",
+    "Source": "Create Character"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_CreateCharacterPopup.uasset",
+    "Export": "DropdownButtonContent_Character",
+    "Prop": "In Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "11B109794FC1EC9C93BC50849D47CE28",
+    "Source": "Select Character..."
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_CreateCharacterPopup.uasset",
+    "Export": "DropdownButtonContent_Skin",
+    "Prop": "In Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "CE95E03042934E8692F7C8A825757459",
+    "Source": "Select Skin..."
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_DetailsPanel.uasset",
+    "Export": "EditableTextBox_CharacterName",
+    "Prop": "HintText",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "EBB980044C6DD9D6EC82368BCF6A858A",
+    "Source": "Leave empty for non-character lines"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_DetailsPanel.uasset",
+    "Export": "MultiLineEditableTextBox_TextLine",
+    "Prop": "HintText",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "AAEF4CF14B400117B13796BE6B31D168",
+    "Source": "Leaving empty will hide text UI for this step"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_DetailsPanel.uasset",
+    "Export": "Text_CharacterHidden",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "7647A92141CB08D575959EB250C46320",
+    "Source": "\r\nCharacter is hidden\r\n"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_DetailsPanel.uasset",
+    "Export": "Text_NoActiveAnimations",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "30C127F44BE24A629E29AC9E30F1B88F",
+    "Source": "\r\nNo animations\r\n"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_DetailsPanel.uasset",
+    "Export": "Text_NoActiveMorphs",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "32FE792C460900304101D2B6A7F70160",
+    "Source": "\r\nNo expressions\r\n"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_DetailsPanel.uasset",
+    "Export": "Text_NoEditor",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "487173BF474B56C170159C9FAD8C238C",
+    "Source": "Select timeline slot to start editing"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_DetailsPanel.uasset",
+    "Export": "TextBlock",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "651C51044A5B6E7EA6047D80CA1C6DF7",
+    "Source": "Stop BGM"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_DetailsPanel.uasset",
+    "Export": "TextBlock",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "52566FEA47F2641AD5565699636E4CC5",
+    "Source": "Character Name"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_DetailsPanel.uasset",
+    "Export": "TextBlock",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "1E8B41EF431915774A8E90864FE17BE7",
+    "Source": "Clear changes"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_DetailsPanel.uasset",
+    "Export": "TextBlock",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "57078D5940C69A85F6FE5FAF05D9277A",
+    "Source": "Remove"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_DetailsPanel.uasset",
+    "Export": "TextBlock",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "EE12D09F423E23B18E2887817EE4C8D6",
+    "Source": "Animations"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_DetailsPanel.uasset",
+    "Export": "TextBlock",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "F7465EC74DEA3144811F1597440EA2B6",
+    "Source": "Hide Character"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_DetailsPanel.uasset",
+    "Export": "TextBlock",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "75DDD4EC498C5E52D8D139ACE19465F7",
+    "Source": "Position"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_DetailsPanel.uasset",
+    "Export": "TextBlock",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "E64035BB4E5426BFAC6500822AC8DFF6",
+    "Source": "Rotation"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_DetailsPanel.uasset",
+    "Export": "TextBlock",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "47A1F0FE4F4D0EBD3F4C13834A7F4944",
+    "Source": "Scale"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_DetailsPanel.uasset",
+    "Export": "TextBlock",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "4A434E1B4A3CD6CFC14279B1D9DF10D7",
+    "Source": "Text Line"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_DetailsPanel.uasset",
+    "Export": "TextBlock",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "DB55DCAC442F5AAD83E8AEBEE8D1FD42",
+    "Source": "Clear changes"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_DetailsPanel.uasset",
+    "Export": "TextBlock",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "D07694E448639E7C2C88979B87C75C78",
+    "Source": "Looping"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_DetailsPanel.uasset",
+    "Export": "TextBlock",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "09B2B2C349A40576557735A7174FCDD0",
+    "Source": "Switch through black"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_DetailsPanel.uasset",
+    "Export": "TextBlock",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "2F44799F486C633BCE775D8055EC2E57",
+    "Source": "Face Expressions"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_DetailsPanel.uasset",
+    "Export": "TextBlock",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "8EDF32A14A12953ABD08749F62C4C4D0",
+    "Source": "Clear changes"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_DetailsPanel.uasset",
+    "Export": "TextBlock",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "D9717AD8427C2A647CF127A992BDB848",
+    "Source": "Show & Transform Character"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_DetailsPanel.uasset",
+    "Export": "TextBlock",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "09A95DF64CBB979789520DA11129F5C0",
+    "Source": "BGM"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_DetailsPanel.uasset",
+    "Export": "TextBlock",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "31207A7148011132D9386F9BA1D3D350",
+    "Source": "Ambient"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_DetailsPanel.uasset",
+    "Export": "TextBlock_AnimLoop",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "20384D31482FF15947E652BBB180122C",
+    "Source": "Loop Animation"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_DetailsPanel.uasset",
+    "Export": "DropdownButtonContent_Background",
+    "Prop": "In Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "3B026B734E714CE82DB4FC8048287580",
+    "Source": "Select Background..."
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_DropdownButtonContent.uasset",
+    "Export": "TextBlock",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "2841659B4C8A0146618B22BE4C13378D",
+    "Source": "Lorem Ipsum"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_DropdownButtonContentMorph.uasset",
+    "Export": "WarningImage",
+    "Prop": "ToolTipText",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "29F12C444EBBB258F7E31B940450976E",
+    "Source": "Another morph with the same name already exists. Changes to this morph won't be saved."
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_DropdownButtonContentMorph.uasset",
+    "Export": "TextBlock",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "60E71DAF4098BE77A66CA49B404531F2",
+    "Source": "Lorem Ipsum"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_Editor.uasset",
+    "Export": "Button_ExitEditor",
+    "Prop": "ToolTipText",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "FB6C32824F2D701FFF9FFEAF47130492",
+    "Source": "Exit Editor"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_Editor.uasset",
+    "Export": "Button_NewScenario",
+    "Prop": "ToolTipText",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "D4EBACF34FE40A3EB93D059157A44022",
+    "Source": "New Scenario"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_Editor.uasset",
+    "Export": "Button_OpenScenario",
+    "Prop": "ToolTipText",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "5CF8FB224CA15D66DEE8FCAB85E23A71",
+    "Source": "Open Scenario"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_Editor.uasset",
+    "Export": "Button_PlayScenario",
+    "Prop": "ToolTipText",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "60F7D2BF4FE58DE931C3B499AD5B6CC3",
+    "Source": "Play Scenario"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_Editor.uasset",
+    "Export": "Button_SaveScenario",
+    "Prop": "ToolTipText",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "5BAEC37645682E517AF0D8AD95D94892",
+    "Source": "Save Scenario"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_Editor.uasset",
+    "Export": "EditableTextBox_AuthorName",
+    "Prop": "HintText",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "6358CA0D44778BB0701722A509AE220D",
+    "Source": "Scenario creator"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_Editor.uasset",
+    "Export": "EditableTextBox_ScenarioName",
+    "Prop": "HintText",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "1441F0414C34A2DF116822B005218AF1",
+    "Source": "Scenario title"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_Editor.uasset",
+    "Export": "EditableTextBox_TimelineSteps",
+    "Prop": "HintText",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "0403085D4916C4369018468324A5EC6E",
+    "Source": "12"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_Editor.uasset",
+    "Export": "MultiLineEditableTextBox_ScenarioDesc",
+    "Prop": "HintText",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "CBD418EA45DE60D58E1B6BAFD67A6257",
+    "Source": "What is the scenario about"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_Editor.uasset",
+    "Export": "Text_DetailsTitle",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "B84B402E436C8FA5F14F58A2E68B3F80",
+    "Source": "Contextual Title"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_Editor.uasset",
+    "Export": "TextBlock",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "86C80C2043E30628A84AD4BD56D48A84",
+    "Source": "Info"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_Editor.uasset",
+    "Export": "TextBlock",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "41D482844298C43CDEB2EA9157E801B9",
+    "Source": "Add character"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_Editor.uasset",
+    "Export": "TextBlock",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "9BFEAFCC475DC9B84FA44AB95DA16D74",
+    "Source": "Characters"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_Editor.uasset",
+    "Export": "TextBlock",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "C0778FB84A0651F037C920B1FB27F024",
+    "Source": "Author"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_Editor.uasset",
+    "Export": "TextBlock",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "E7BFB30C4605FDCA6AA881A851E03E99",
+    "Source": "Description"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_Editor.uasset",
+    "Export": "TextBlock",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "E8458C09493E3D0676DAEFBB14A7C7DA",
+    "Source": "Preview"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_Editor.uasset",
+    "Export": "TextBlock",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "013953E44D8F4365760F07B47B8A8B03",
+    "Source": "Name"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_Editor.uasset",
+    "Export": "TextBlock_TotalSteps",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "6C16034E45F5E3D7DCC4FAB7E77AEEAA",
+    "Source": "/ 2"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_Editor.uasset",
+    "Export": "DropdownButtonContent_Background",
+    "Prop": "In Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "B7AA5A1A43F4A79397A8F8826EAAFF3B",
+    "Source": "Select Background..."
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_SubslotContent.uasset",
+    "Export": "TextBlock",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "43D5BF3C46B1DA45A44B82BEB804DC85",
+    "Source": "LoremIpsumDolorSitAmet"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_TimelineHeaderItem.uasset",
+    "Export": "TextBlock",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "656892EB446C6A6994635097D48173A2",
+    "Source": "999"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_TimelineTrackHeaderItem.uasset",
+    "Export": "SubtitleText",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "668DB02C4FB28FF11F67819FA780D332",
+    "Source": "SkinID"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_TimelineTrackHeaderItem.uasset",
+    "Export": "TitleText",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "766505134DA01D890A56D0B9EF8654C2",
+    "Source": "Background"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/PlayerUI/Widgets/WBP_History.uasset",
+    "Export": "TitleText",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "3A8EC71C40940C3A4BE6F2AC969A03D8",
+    "Source": "History"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/PlayerUI/Widgets/WBP_HistoryEntry.uasset",
+    "Export": "TextBlock_CharacterName",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "UMG",
+    "Key": "TextBlockDefaultValue",
+    "Source": "Text Block"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/PlayerUI/Widgets/WBP_HistoryEntry.uasset",
+    "Export": "TextBlock_Text",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "3D045302405907BD591CDFB96F6B972F",
+    "Source": "(Celestia and I are organizing the medical records of the latest Collapse Syndrome patients.)"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/PlayerUI/Widgets/WBP_TextContainer.uasset",
+    "Export": "AutoText",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "135FBED643CE27BCF368CDB6A9C02F54",
+    "Source": "Auto"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/PlayerUI/Widgets/WBP_TextContainer.uasset",
+    "Export": "LogText",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "658B740F48860F20181570BD7994BDAF",
+    "Source": "Log"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/PlayerUI/Widgets/WBP_TextContainer.uasset",
+    "Export": "SkipText",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "C8BB85284DBA5B532FE6548015D7C01A",
+    "Source": "Skip"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/PlayerUI/Widgets/WBP_Title.uasset",
+    "Export": "TitleText",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "C150A07C476503BE86714799DF51CF3F",
+    "Source": "Lorem Ipsum dolor sit amet"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/Widgets/WBP_ActiveCharacter.uasset",
+    "Export": "CharNameText",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "UMG",
+    "Key": "TextBlockDefaultValue",
+    "Source": "Text Block"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/Widgets/WBP_ActiveCharacter.uasset",
+    "Export": "CharSkinText",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "UMG",
+    "Key": "TextBlockDefaultValue",
+    "Source": "Text Block"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/Widgets/WBP_ActiveCharacter.uasset",
+    "Export": "Looping",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "D091779140ADF6750D5F3AAD385AF055",
+    "Source": "Looping"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/Widgets/WBP_ActiveCharacter.uasset",
+    "Export": "NoMorphsText",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "595AE07D4D10C1989F04568C6928D61F",
+    "Source": "No Active Morphs"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/Widgets/WBP_ActiveCharacter.uasset",
+    "Export": "TextBlock",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "536B8BC444B7CD45B4AA64A4C7F45152",
+    "Source": "Destroy Character"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/Widgets/WBP_ActiveCharacter.uasset",
+    "Export": "TextBlock",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "0D83442C47CC436AA1E467844DB7F2CF",
+    "Source": "Animation"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/Widgets/WBP_ActiveCharacter.uasset",
+    "Export": "TextBlock",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "1582A1224FDC0BCDBB1FA7A38F7F504B",
+    "Source": "Switch"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/Widgets/WBP_ActiveCharacter.uasset",
+    "Export": "TextBlock",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "CC032AE74801193403E83387D985FDFF",
+    "Source": "MorphTarget"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/Widgets/WBP_ActiveCharacter.uasset",
+    "Export": "TextBlock",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "2BBF73394C2A6E51E69D87A401C983AF",
+    "Source": "Play"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/Widgets/WBP_CharMorphTargetItem.uasset",
+    "Export": "MorphTargetAmount",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "UMG",
+    "Key": "TextBlockDefaultValue",
+    "Source": "Text Block"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/Widgets/WBP_CharMorphTargetItem.uasset",
+    "Export": "MorphTargetName",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "UMG",
+    "Key": "TextBlockDefaultValue",
+    "Source": "Text Block"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/Widgets/WBP_CharMorphTargetItem.uasset",
+    "Export": "TextBlock",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "6DDF1F294F423995C7B25A97CB858687",
+    "Source": "X"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/Widgets/WBP_EditTextPopup.uasset",
+    "Export": "EditableTextBox",
+    "Prop": "HintText",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "435DD83246A3D7B7AE7A1790AAB30EFC",
+    "Source": "Editable Text Hint"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/Widgets/WBP_EditTextPopup.uasset",
+    "Export": "TextBlock_Body",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "198C2524404EA15D8DE3A29C06E2EC7C",
+    "Source": "Popup text"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/Widgets/WBP_EditTextPopup.uasset",
+    "Export": "TextBlock_ButtonFalse",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "C456DCCA45E2E3629DC8378F0F6144D7",
+    "Source": "Cancel"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/Widgets/WBP_EditTextPopup.uasset",
+    "Export": "TextBlock_ButtonTrue",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "E9EE0C534E1BDB18DC21E5B7C93CB32E",
+    "Source": "Confirm"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/Widgets/WBP_EditTextPopup.uasset",
+    "Export": "TextBlock_Title",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "14B00E164B21A8CB5C7D289AB7C823F3",
+    "Source": "Title"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/Widgets/WBP_KeyBinding.uasset",
+    "Export": "TextBlock_Action",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "640F9707436C53FBB72F299652AC8862",
+    "Source": "Action"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/Widgets/WBP_KeyBinding.uasset",
+    "Export": "TextBlock_Key",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "674D21B847796C74BC068B85DA3639DC",
+    "Source": "Esc"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/Widgets/WBP_MainMenu.uasset",
+    "Export": "Button",
+    "Prop": "ToolTipText",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "E6F34B6043DFC74414D41FAD2B721D9D",
+    "Source": "Coming soon..."
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/Widgets/WBP_MainMenu.uasset",
+    "Export": "EditableTextBox_Search",
+    "Prop": "HintText",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "C9F25BB7488159753D3CB1B29D6862EB",
+    "Source": "Search scenario by name"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/Widgets/WBP_MainMenu.uasset",
+    "Export": "TextBlock",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "131FB8434594E44B83EA989B5A57ED65",
+    "Source": "Create"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/Widgets/WBP_MainMenu.uasset",
+    "Export": "TextBlock",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "3AB8D5544CB07FCEA4B4F7B8AE953BCE",
+    "Source": "Show completed"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/Widgets/WBP_MainMenu.uasset",
+    "Export": "TextBlock",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "B7737D504A4DED2BF771EFA88E177D58",
+    "Source": "Play"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/Widgets/WBP_MainMenu.uasset",
+    "Export": "TextBlock",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "85D5AD554406C7EEBE6FFB91E9F60598",
+    "Source": "Completed"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/Widgets/WBP_MainMenu.uasset",
+    "Export": "TextBlock",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "E36C761D4EC6C108DB8D1C857C7E162C",
+    "Source": "No scenarios found!"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/Widgets/WBP_MainMenu.uasset",
+    "Export": "TextBlock_Author",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "UMG",
+    "Key": "TextBlockDefaultValue",
+    "Source": "Text Block"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/Widgets/WBP_MainMenu.uasset",
+    "Export": "TextBlock_Description",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "3A8ABA0E4B4530F3E863AC92B1D20720",
+    "Source": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod  tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim  veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea  commodo consequat."
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/Widgets/WBP_MainMenu.uasset",
+    "Export": "TextBlock_FilteredScenarios",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "UMG",
+    "Key": "TextBlockDefaultValue",
+    "Source": "Text Block"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/Widgets/WBP_MainMenu.uasset",
+    "Export": "TextBlock_NoScenario",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "D4F636434BA47F339E338C9BAA78DA17",
+    "Source": "Select scenario to play"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/Widgets/WBP_MainMenu.uasset",
+    "Export": "TextBlock_Play",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "924974AB42CFD6858E9A85910220BDFD",
+    "Source": "Play"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/Widgets/WBP_MainMenu.uasset",
+    "Export": "TextBlock_Title",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "UMG",
+    "Key": "TextBlockDefaultValue",
+    "Source": "Text Block"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/Widgets/WBP_MenuScenarioEntry.uasset",
+    "Export": "TextBlock_Title",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "UMG",
+    "Key": "TextBlockDefaultValue",
+    "Source": "Text Block"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/Widgets/WBP_QuestionPopup.uasset",
+    "Export": "TextBlock_Body",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "1DCE0C0F4C81CDEFF495C2B9E71DE295",
+    "Source": "Popup text"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/Widgets/WBP_QuestionPopup.uasset",
+    "Export": "TextBlock_ButtonFalse",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "6CDEC57949FDBB7364BF85A330111DB7",
+    "Source": "Cancel"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/Widgets/WBP_QuestionPopup.uasset",
+    "Export": "TextBlock_ButtonTrue",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "574B9C1C453B8CCDA870F2A5563ACE30",
+    "Source": "Confirm"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/Widgets/WBP_QuestionPopup.uasset",
+    "Export": "TextBlock_Title",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "E107CABA44D98712E69205A5A5EBFCDA",
+    "Source": "Title"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/Widgets/WBP_ScenarioCategory.uasset",
+    "Export": "TextBlock_CategoryName",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "UMG",
+    "Key": "TextBlockDefaultValue",
+    "Source": "Text Block"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/Widgets/WBP_TitleScreen.uasset",
+    "Export": "TextBlock",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "12FD0CB9442D12C22C640ABBB7D51953",
+    "Source": "Calabiyau, 卡拉彼丘, Strinova and all assets used in this game are property of Shenzhen iDreamSky Technology Co., Ltd."
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/Widgets/WBP_TitleScreen.uasset",
+    "Export": "TextBlock_Click",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "D3EC26FC441D0711427B61A375DD68C5",
+    "Source": "Click anywhere to continue"
+  },
+  {
+    "File": "CalaPlayer/Content/CalaPlayer/UI/Widgets/WBP_TitleScreen.uasset",
+    "Export": "TextBlock_Version",
+    "Prop": "Text",
+    "History": "Base",
+    "Namespace": "",
+    "Key": "84D579684284D9F471F1CAA597B0A095",
+    "Source": "v0.1.0.108"
+  }
+]

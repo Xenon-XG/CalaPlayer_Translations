@@ -50,12 +50,6 @@ CalaPlayer\Content\Paks\
 
 **依赖**（自行准备）：[retoc](https://github.com/trumank/retoc)（IoStore 解/打包）、[UAssetAPI](https://github.com/atenfyr/UAssetAPI)（需对 UE5.7 打小补丁）、任一 UE5.7 的 `.usmap`、.NET 10 SDK。
 
-### 技术要点
-- 游戏资产是 **cooked + IoStore + Oodle（未加密）**，用 retoc 转成 legacy 资产、编辑后再转回 zen 打成高优先级 `_P` 补丁包覆盖原包。
-- 界面文字分三类，都由 CalaTextTool 处理：**属性 FText**（`CultureInvariantString`）、**属性 FString**（`StrProperty`，如右键菜单项）、**蓝图字节码文字**（`EX_TextConst` / 裸 `EX_StringConst`，运行时 `SetText` 设置的按钮/下拉/弹窗/时间轴文字）。
-- 改字节码字符串会移动跳转偏移，需重算：跳转用表达式身份/位置增量修复，`EX_Context.Offset` 按子表达式大小重算，**并且要同步修正调用方传给 `ExecuteUbergraph` 的硬编码入口偏移**（否则崩溃）。
-- 中文能直接显示：主字体 `Strinova_Font` 已含 Calabiyau 中文字形回退，无需换字体。
-
 ---
 
 ## 致谢

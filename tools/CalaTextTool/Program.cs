@@ -511,7 +511,23 @@ internal static class Program
 
     // Bare string consts are only translated for these known, unambiguous display strings (a bare
     // EX_StringConst can also be a logic key like "All"/"Play", which must NOT be translated).
-    static readonly HashSet<string> BareSafe = new HashSet<string> { "Showing scenarios: " };
+    // Scoped PER FILE: a bare string is translated only in files whose relative path contains the key
+    // (key "" = any file). This is required for common words like "Remove": the WBP_MenuScenarioEntry
+    // ComboBox compares the (translated) selected option against a bare literal, so that literal must
+    // be translated to the SAME Chinese to keep the dropdown working -- but "Remove" as a bare logic
+    // key in OTHER blueprints must stay English.
+    static readonly Dictionary<string, HashSet<string>> BareSafeByFile = new()
+    {
+        [""] = new HashSet<string> { "Showing scenarios: " },
+        ["WBP_MenuScenarioEntry"] = new HashSet<string> { "Set Category", "Remove" },
+    };
+
+    static bool IsBareSafe(string rel, string cur)
+    {
+        foreach (var kv in BareSafeByFile)
+            if ((kv.Key.Length == 0 || rel.Contains(kv.Key)) && kv.Value.Contains(cur)) return true;
+        return false;
+    }
 
     // Positional-delta shift: an absolute code offset moves forward by the number of bytes inserted
     // before it. Correct for linear insertion (verified: VisitAll total == stored ScriptBytecodeSize,
@@ -526,7 +542,7 @@ internal static class Program
     //   edited subtree. Record per-function insertion deltas.
     // PASS 2: cross-function fix — every caller of an edited ExecuteUbergraph_X passes a hardcoded
     //   EntryPoint offset (EX_IntConst); shift it by that ubergraph's deltas.
-    static int ApplyBytecode(UAsset asset, Dictionary<string, string> map, HashSet<string> used)
+    static int ApplyBytecode(UAsset asset, string rel, Dictionary<string, string> map, HashSet<string> used)
     {
         int changes = 0;
         var fnDeltas = new Dictionary<string, List<(uint pos, int delta)>>();
@@ -546,7 +562,7 @@ internal static class Program
             {
                 string cur = ExprStr(e);
                 if (cur == null) return null;
-                if (bare && !BareSafe.Contains(cur)) return null;
+                if (bare && !IsBareSafe(rel, cur)) return null;
                 if (!map.TryGetValue(cur, out var zh) || string.IsNullOrEmpty(zh) || zh == cur) return null;
                 if (!preOff.TryGetValue(e, out uint pos)) return null;
                 var neu = new EX_UnicodeStringConst { Value = zh };
@@ -690,7 +706,7 @@ internal static class Program
                                 strChanges++; used.Add(cur);
                             }
                         });
-            int bcChanges = ApplyBytecode(asset, map, used);
+            int bcChanges = ApplyBytecode(asset, rel, map, used);
             int localChanges = propChanges + strChanges + bcChanges;
 
             if (localChanges > 0)

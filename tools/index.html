@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CalaPlayer 汉化工具</title>
+<style>
+  :root{
+    --bg:#0f1115; --panel:#171a21; --panel2:#1e222b; --line:#2a2f3a;
+    --fg:#e6e8ee; --muted:#8b93a7; --accent:#5b8cff; --accent2:#3f6fe0;
+    --ok:#3fb950; --warn:#e3b341; --bad:#f85149; --chip:#232834;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{background:var(--bg);color:var(--fg);font:14px/1.5 "Segoe UI","Microsoft YaHei",system-ui,sans-serif;display:flex;flex-direction:column}
+  header{padding:14px 20px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:linear-gradient(180deg,#141822,#0f1115)}
+  header h1{font-size:16px;margin:0;font-weight:600;letter-spacing:.3px}
+  header .sub{color:var(--muted);font-size:12px}
+  .spacer{flex:1}
+  .status{font-size:12px;padding:4px 10px;border-radius:999px;background:var(--chip);border:1px solid var(--line)}
+  .status.ok{color:var(--ok)} .status.bad{color:var(--bad)}
+  .toolbar{display:flex;gap:10px;align-items:center;padding:12px 20px;border-bottom:1px solid var(--line);flex-wrap:wrap;background:var(--panel)}
+  input[type=text],input.cell{background:var(--panel2);border:1px solid var(--line);color:var(--fg);border-radius:8px;padding:8px 10px;outline:none}
+  input[type=text]:focus,input.cell:focus{border-color:var(--accent)}
+  #search{min-width:240px;flex:1;max-width:420px}
+  label.chk{display:flex;align-items:center;gap:6px;color:var(--muted);cursor:pointer;user-select:none}
+  .count{color:var(--muted);font-size:12px}
+  button{background:var(--accent2);color:#fff;border:0;border-radius:8px;padding:9px 16px;font-weight:600;cursor:pointer;transition:.15s}
+  button:hover{background:var(--accent)}
+  button.ghost{background:var(--chip);color:var(--fg);border:1px solid var(--line)}
+  button.ghost:hover{border-color:var(--accent)}
+  button:disabled{opacity:.5;cursor:not-allowed}
+  .wrap{flex:1;overflow:auto;padding:0 20px 20px}
+  table{width:100%;border-collapse:collapse;margin-top:10px}
+  th{position:sticky;top:0;background:var(--bg);text-align:left;color:var(--muted);font-weight:600;font-size:12px;padding:8px 10px;border-bottom:1px solid var(--line);z-index:1}
+  td{padding:6px 10px;border-bottom:1px solid #21252f;vertical-align:top}
+  tr:hover td{background:#141821}
+  .src{font-family:"Cascadia Code",Consolas,monospace;font-size:13px;color:#cbd3e6;white-space:pre-wrap;word-break:break-word}
+  td.zh{width:38%} input.cell{width:100%}
+  tr.untranslated input.cell{border-color:#4a3a1a;background:#211d13}
+  .ctx{color:var(--muted);font-size:12px;white-space:pre-wrap}
+  .badge{display:inline-block;font-size:11px;color:var(--warn);border:1px solid #4a3a1a;border-radius:6px;padding:0 6px;margin-left:6px}
+  footer{border-top:1px solid var(--line);background:var(--panel)}
+  .logbar{display:flex;align-items:center;gap:10px;padding:8px 20px;cursor:pointer;color:var(--muted);font-size:12px}
+  #log{margin:0;padding:0 20px 16px;max-height:34vh;overflow:auto;font-family:Consolas,monospace;font-size:12px;white-space:pre-wrap;color:#c9d1d9;display:none}
+  #log.show{display:block}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--muted);display:inline-block}
+  .dot.run{background:var(--warn);animation:pulse 1s infinite}
+  .dot.ok{background:var(--ok)} .dot.bad{background:var(--bad)}
+  @keyframes pulse{50%{opacity:.3}}
+  .toast{position:fixed;right:20px;bottom:20px;background:var(--panel2);border:1px solid var(--line);border-left:3px solid var(--accent);padding:10px 16px;border-radius:8px;box-shadow:0 8px 24px #0008;opacity:0;transform:translateY(8px);transition:.2s}
+  .toast.show{opacity:1;transform:none}
+  .toast.ok{border-left-color:var(--ok)} .toast.bad{border-left-color:var(--bad)}
+</style>
+</head>
+<body>
+<header>
+  <h1>CalaPlayer 汉化工具</h1>
+  <span class="sub">改中文 → 一键打包安装</span>
+  <span class="spacer"></span>
+  <span id="gameStatus" class="status">检查游戏状态…</span>
+</header>
+
+<div class="toolbar">
+  <input id="search" type="text" placeholder="搜索原文或中文…">
+  <label class="chk"><input type="checkbox" id="onlyUntrans"> 只看未翻译</label>
+  <span class="count" id="count"></span>
+  <span class="spacer"></span>
+  <span class="count" id="dirty"></span>
+  <button class="ghost" id="btnSave">保存</button>
+  <button id="btnBuild">打包并安装到游戏</button>
+</div>
+
+<div class="wrap">
+  <table>
+    <thead><tr><th>原文（English）</th><th>中文</th><th>出现位置</th></tr></thead>
+    <tbody id="rows"></tbody>
+  </table>
+</div>
+
+<footer>
+  <div class="logbar" id="logbar">
+    <span class="dot" id="logdot"></span><span id="logtitle">打包日志（点此展开/收起）</span>
+  </div>
+  <pre id="log"></pre>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const $ = s => document.querySelector(s);
+let DATA = {translations:{}, reference:[]};
+let work = {};         // {source: zh}
+let ctxMap = {};       // {source: "出处文字"}
+let dirty = false;
+
+function toast(msg, kind){
+  const t=$("#toast"); t.textContent=msg; t.className="toast show "+(kind||"");
+  clearTimeout(t._t); t._t=setTimeout(()=>t.className="toast",2200);
+}
+function setDirty(v){ dirty=v; $("#dirty").textContent = v ? "● 有未保存修改" : ""; }
+
+function buildCtx(){
+  ctxMap={};
+  const agg={};
+  for(const it of DATA.reference){
+    const s=it.Source; if(s==null) continue;
+    const file=(it.File||"").split("/").pop().replace(/\.uasset$/,"");
+    const tag=file+(it.Export?(" · "+it.Export):"");
+    (agg[s]=agg[s]||new Set()).add(tag);
+  }
+  for(const s in agg) ctxMap[s]=[...agg[s]].join("\n");
+}
+
+function allSources(){
+  const set=new Set();
+  for(const k in DATA.translations) set.add(k);
+  for(const it of DATA.reference) if(it.Source!=null) set.add(it.Source);
+  return [...set].sort((a,b)=>a.toLowerCase().localeCompare(b.toLowerCase()));
+}
+
+function render(){
+  const q=$("#search").value.trim().toLowerCase();
+  const onlyU=$("#onlyUntrans").checked;
+  const rows=$("#rows"); rows.innerHTML="";
+  let shown=0, total=0, done=0;
+  for(const src of allSources()){
+    total++;
+    const zh=work[src]||"";
+    if(zh.trim()) done++;
+    if(onlyU && zh.trim()) continue;
+    if(q && !(src.toLowerCase().includes(q) || zh.toLowerCase().includes(q))) continue;
+    shown++;
+    const tr=document.createElement("tr");
+    if(!zh.trim()) tr.className="untranslated";
+    const ctx=ctxMap[src]||"—";
+    const td1=document.createElement("td");
+    td1.innerHTML='<span class="src"></span>'; td1.querySelector(".src").textContent=src;
+    const td2=document.createElement("td"); td2.className="zh";
+    const inp=document.createElement("input"); inp.className="cell"; inp.value=zh; inp.placeholder="填中文…";
+    inp.addEventListener("input",()=>{ work[src]=inp.value; setDirty(true);
+      tr.classList.toggle("untranslated",!inp.value.trim()); });
+    td2.appendChild(inp);
+    const td3=document.createElement("td");
+    td3.innerHTML='<span class="ctx"></span>'; td3.querySelector(".ctx").textContent=ctx;
+    tr.append(td1,td2,td3); rows.appendChild(tr);
+  }
+  $("#count").textContent = `已译 ${done}/${total} · 显示 ${shown}`;
+}
+
+async function load(){
+  const r=await fetch("/api/data"); DATA=await r.json();
+  work=Object.assign({}, DATA.translations);
+  buildCtx(); render(); gameStatus(DATA.gameRunning);
+}
+function gameStatus(running){
+  const el=$("#gameStatus");
+  el.textContent = running ? "⚠ 游戏运行中（打包前请关闭）" : "✓ 游戏未运行，可打包";
+  el.className="status "+(running?"bad":"ok");
+}
+async function refreshStatus(){ try{const r=await fetch("/api/status");gameStatus((await r.json()).gameRunning);}catch(e){} }
+
+async function save(){
+  const r=await fetch("/api/save",{method:"POST",headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({translations:work})});
+  const j=await r.json();
+  if(j.ok){ setDirty(false); toast("已保存 "+j.count+" 条翻译","ok"); render(); }
+  else toast("保存失败："+(j.error||""),"bad");
+}
+
+async function build(){
+  const btn=$("#btnBuild"); btn.disabled=true; $("#btnSave").disabled=true;
+  const dot=$("#logdot"), log=$("#log");
+  dot.className="dot run"; log.classList.add("show"); log.textContent="正在保存并打包，请稍候（首次约需十几秒到一两分钟）…\n";
+  $("#logtitle").textContent="打包中…";
+  try{
+    const r=await fetch("/api/build",{method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({translations:work})});
+    const j=await r.json();
+    setDirty(false);
+    log.textContent=j.log||"(无输出)";
+    log.scrollTop=log.scrollHeight;
+    dot.className="dot "+(j.ok?"ok":"bad");
+    $("#logtitle").textContent=j.ok?"打包成功":"打包失败（展开看日志）";
+    toast(j.ok?"打包并安装完成！启动游戏即为最新翻译":"打包失败，见下方日志", j.ok?"ok":"bad");
+  }catch(e){
+    dot.className="dot bad"; log.textContent="请求失败："+e; $("#logtitle").textContent="打包失败";
+    toast("打包请求失败","bad");
+  }finally{ btn.disabled=false; $("#btnSave").disabled=false; refreshStatus(); }
+}
+
+$("#search").addEventListener("input",render);
+$("#onlyUntrans").addEventListener("change",render);
+$("#btnSave").addEventListener("click",save);
+$("#btnBuild").addEventListener("click",build);
+$("#logbar").addEventListener("click",()=>$("#log").classList.toggle("show"));
+window.addEventListener("keydown",e=>{ if((e.ctrlKey||e.metaKey)&&e.key==="s"){e.preventDefault();save();} });
+window.addEventListener("beforeunload",e=>{ if(dirty){e.preventDefault();e.returnValue="";} });
+
+load();
+setInterval(refreshStatus, 5000);
+</script>
+</body>
+</html>

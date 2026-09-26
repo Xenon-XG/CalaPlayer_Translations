@@ -1,5 +1,7 @@
 ﻿# CalaPlayer 汉化 — 重新生成并安装
 # 改完 translations.json 后运行本脚本，即可重新打包并安装到游戏。
+# -NoPause：不在结束/出错时等待回车（供 GUI 无人值守调用）。
+param([switch]$NoPause)
 $ErrorActionPreference = 'Stop'
 try { [Console]::OutputEncoding = [System.Text.Encoding]::UTF8 } catch {}
 
@@ -15,7 +17,7 @@ $edited = Join-Path $root 'mod_work\_rebuild_edited'
 $out    = Join-Path $root 'mod_work\_rebuild_pak'
 $paks   = Join-Path $root 'CalaPlayer\Content\Paks'
 
-function Fail($msg) { Write-Host "[X] $msg" -ForegroundColor Red; Read-Host '按回车退出'; exit 1 }
+function Fail($msg) { Write-Host "[X] $msg" -ForegroundColor Red; if (-not $NoPause) { Read-Host '按回车退出' }; exit 1 }
 
 Write-Host '==============================================' -ForegroundColor Cyan
 Write-Host '   CalaPlayer 汉化 — 重新生成并安装' -ForegroundColor Cyan
@@ -45,4 +47,4 @@ foreach ($f in 'CalaPlayer-Windows_P.utoc','CalaPlayer-Windows_P.ucas','CalaPlay
 
 Write-Host ''
 Write-Host '[OK] 完成！启动游戏即为最新翻译。' -ForegroundColor Green
-Read-Host '按回车退出'
+if (-not $NoPause) { Read-Host '按回车退出' }

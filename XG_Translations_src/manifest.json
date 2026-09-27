@@ -1,0 +1,215 @@
+{
+  "name": "XG_Translations",
+  "folder": "XG_Translations_src",
+  "version": "1.1",
+  "author": "Xenon-XG",
+  "kind": "ui_text",
+  "note": "只改 WBP_/BP_ 界面蓝图里的文字(FText/StrProperty/蓝图字节码)；不改任何 DA_* 数据表。files 为本 mod 改过的 legacy 资产，须按此相对路径合入统一目录后 retoc to-zen 成单个 _P（retoc 靠目录结构还原包 id，不能拍平）。",
+  "targets": {},
+  "packages": [
+    {
+      "path": "/Game/CalaPlayer/Blueprints/Test/BP_TimelineManager",
+      "edits": {
+        "ftext": 0,
+        "strprop": 0,
+        "bytecode": 4
+      }
+    },
+    {
+      "path": "/Game/CalaPlayer/UI/EditorUI/Widgets/WBP_AnimationListItem",
+      "edits": {
+        "ftext": 0,
+        "strprop": 0,
+        "bytecode": 1
+      }
+    },
+    {
+      "path": "/Game/CalaPlayer/UI/EditorUI/Widgets/WBP_CharacterEntry",
+      "edits": {
+        "ftext": 2,
+        "strprop": 0,
+        "bytecode": 0
+      }
+    },
+    {
+      "path": "/Game/CalaPlayer/UI/EditorUI/Widgets/WBP_ColorPicker",
+      "edits": {
+        "ftext": 3,
+        "strprop": 0,
+        "bytecode": 0
+      }
+    },
+    {
+      "path": "/Game/CalaPlayer/UI/EditorUI/Widgets/WBP_CreateCharacterPopup",
+      "edits": {
+        "ftext": 6,
+        "strprop": 0,
+        "bytecode": 2
+      }
+    },
+    {
+      "path": "/Game/CalaPlayer/UI/EditorUI/Widgets/WBP_DetailsPanel",
+      "edits": {
+        "ftext": 26,
+        "strprop": 0,
+        "bytecode": 7
+      }
+    },
+    {
+      "path": "/Game/CalaPlayer/UI/EditorUI/Widgets/WBP_DropdownButtonContentMorph",
+      "edits": {
+        "ftext": 1,
+        "strprop": 0,
+        "bytecode": 0
+      }
+    },
+    {
+      "path": "/Game/CalaPlayer/UI/EditorUI/Widgets/WBP_Editor",
+      "edits": {
+        "ftext": 17,
+        "strprop": 0,
+        "bytecode": 16
+      }
+    },
+    {
+      "path": "/Game/CalaPlayer/UI/EditorUI/Widgets/WBP_MorphListItem",
+      "edits": {
+        "ftext": 0,
+        "strprop": 0,
+        "bytecode": 1
+      }
+    },
+    {
+      "path": "/Game/CalaPlayer/UI/EditorUI/Widgets/WBP_TimelineTrackHeaderItem",
+      "edits": {
+        "ftext": 1,
+        "strprop": 0,
+        "bytecode": 0
+      }
+    },
+    {
+      "path": "/Game/CalaPlayer/UI/PlayerUI/Widgets/WBP_History",
+      "edits": {
+        "ftext": 1,
+        "strprop": 0,
+        "bytecode": 0
+      }
+    },
+    {
+      "path": "/Game/CalaPlayer/UI/PlayerUI/Widgets/WBP_TextContainer",
+      "edits": {
+        "ftext": 3,
+        "strprop": 0,
+        "bytecode": 0
+      }
+    },
+    {
+      "path": "/Game/CalaPlayer/UI/Widgets/WBP_ActiveCharacter",
+      "edits": {
+        "ftext": 6,
+        "strprop": 0,
+        "bytecode": 0
+      }
+    },
+    {
+      "path": "/Game/CalaPlayer/UI/Widgets/WBP_EditTextPopup",
+      "edits": {
+        "ftext": 3,
+        "strprop": 0,
+        "bytecode": 0
+      }
+    },
+    {
+      "path": "/Game/CalaPlayer/UI/Widgets/WBP_KeyBinding",
+      "edits": {
+        "ftext": 1,
+        "strprop": 0,
+        "bytecode": 0
+      }
+    },
+    {
+      "path": "/Game/CalaPlayer/UI/Widgets/WBP_MainMenu",
+      "edits": {
+        "ftext": 9,
+        "strprop": 0,
+        "bytecode": 15
+      }
+    },
+    {
+      "path": "/Game/CalaPlayer/UI/Widgets/WBP_MenuScenarioEntry",
+      "edits": {
+        "ftext": 0,
+        "strprop": 2,
+        "bytecode": 2
+      }
+    },
+    {
+      "path": "/Game/CalaPlayer/UI/Widgets/WBP_QuestionPopup",
+      "edits": {
+        "ftext": 3,
+        "strprop": 0,
+        "bytecode": 0
+      }
+    },
+    {
+      "path": "/Game/CalaPlayer/UI/Widgets/WBP_ScenarioCategory",
+      "edits": {
+        "ftext": 0,
+        "strprop": 0,
+        "bytecode": 1
+      }
+    },
+    {
+      "path": "/Game/CalaPlayer/UI/Widgets/WBP_TitleScreen",
+      "edits": {
+        "ftext": 1,
+        "strprop": 0,
+        "bytecode": 6
+      }
+    }
+  ],
+  "container_base": "CalaPlayer-Windows",
+  "engine": "UE5_7",
+  "files": [
+    "CalaPlayer/Content/CalaPlayer/Blueprints/Test/BP_TimelineManager.uasset",
+    "CalaPlayer/Content/CalaPlayer/Blueprints/Test/BP_TimelineManager.uexp",
+    "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_AnimationListItem.uasset",
+    "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_AnimationListItem.uexp",
+    "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_CharacterEntry.uasset",
+    "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_CharacterEntry.uexp",
+    "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_ColorPicker.uasset",
+    "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_ColorPicker.uexp",
+    "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_CreateCharacterPopup.uasset",
+    "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_CreateCharacterPopup.uexp",
+    "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_DetailsPanel.uasset",
+    "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_DetailsPanel.uexp",
+    "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_DropdownButtonContentMorph.uasset",
+    "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_DropdownButtonContentMorph.uexp",
+    "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_Editor.uasset",
+    "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_Editor.uexp",
+    "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_MorphListItem.uasset",
+    "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_MorphListItem.uexp",
+    "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_TimelineTrackHeaderItem.uasset",
+    "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_TimelineTrackHeaderItem.uexp",
+    "CalaPlayer/Content/CalaPlayer/UI/PlayerUI/Widgets/WBP_History.uasset",
+    "CalaPlayer/Content/CalaPlayer/UI/PlayerUI/Widgets/WBP_History.uexp",
+    "CalaPlayer/Content/CalaPlayer/UI/PlayerUI/Widgets/WBP_TextContainer.uasset",
+    "CalaPlayer/Content/CalaPlayer/UI/PlayerUI/Widgets/WBP_TextContainer.uexp",
+    "CalaPlayer/Content/CalaPlayer/UI/Widgets/WBP_ActiveCharacter.uasset",
+    "CalaPlayer/Content/CalaPlayer/UI/Widgets/WBP_ActiveCharacter.uexp",
+    "CalaPlayer/Content/CalaPlayer/UI/Widgets/WBP_EditTextPopup.uasset",
+    "CalaPlayer/Content/CalaPlayer/UI/Widgets/WBP_EditTextPopup.uexp",
+    "CalaPlayer/Content/CalaPlayer/UI/Widgets/WBP_KeyBinding.uasset",
+    "CalaPlayer/Content/CalaPlayer/UI/Widgets/WBP_KeyBinding.uexp",
+    "CalaPlayer/Content/CalaPlayer/UI/Widgets/WBP_MainMenu.uasset",
+    "CalaPlayer/Content/CalaPlayer/UI/Widgets/WBP_MainMenu.uexp",
+    "CalaPlayer/Content/CalaPlayer/UI/Widgets/WBP_MenuScenarioEntry.uasset",
+    "CalaPlayer/Content/CalaPlayer/UI/Widgets/WBP_MenuScenarioEntry.uexp",
+    "CalaPlayer/Content/CalaPlayer/UI/Widgets/WBP_QuestionPopup.uasset",
+    "CalaPlayer/Content/CalaPlayer/UI/Widgets/WBP_QuestionPopup.uexp",
+    "CalaPlayer/Content/CalaPlayer/UI/Widgets/WBP_ScenarioCategory.uasset",
+    "CalaPlayer/Content/CalaPlayer/UI/Widgets/WBP_ScenarioCategory.uexp",
+    "CalaPlayer/Content/CalaPlayer/UI/Widgets/WBP_TitleScreen.uasset",
+    "CalaPlayer/Content/CalaPlayer/UI/Widgets/WBP_TitleScreen.uexp"
+  ]
+}

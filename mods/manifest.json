@@ -1,10 +1,10 @@
 {
   "name": "XG_Translations",
   "folder": "mods",
-  "version": "1.2",
+  "version": "1.3",
   "author": "Xenon-XG",
   "kind": "ui_text",
-  "note": "只改 WBP_/BP_ 界面蓝图：UI 文字(FText/StrProperty/蓝图字节码) + 角色名「只翻显示」注入(resname_display，在 SetText 前按词表分支换中文，底层键保持英文；为此给这些包新增了 KismetTextLibrary/KismetStringLibrary 的函数 import)。不改任何 DA_* 数据表。files 为改过的 legacy 资产，须按相对路径合入统一目录后 retoc to-zen 成单个 _P（不能拍平）。",
+  "note": "只改 WBP_/BP_ 界面蓝图：UI 文字(FText/StrProperty/蓝图字节码) + 各类名称「只翻显示」注入(display_maps：resname 角色名 / anim 动作 / morph 表情 / bgm 背景音乐 / ambient 环境音 / sound 音效 / background 背景)，在显示处按词表分支换成中文，存盘/加载用的英文键保持不变；[+] 动作/表情添加菜单为纯字符串下拉，加选项前英→中、选中后中→英。为此给这些包新增了 KismetTextLibrary/KismetStringLibrary 的函数 import。不改任何 DA_* 数据表。files 为改过的 legacy 资产，须按相对路径合入统一目录后 retoc to-zen 成单个 _P（不能拍平）。",
   "targets": {},
   "packages": [
     {
@@ -20,7 +20,10 @@
       "edits": {
         "ftext": 0,
         "strprop": 0,
-        "bytecode": 1
+        "bytecode": 1,
+        "display_maps": [
+          "anim"
+        ]
       }
     },
     {
@@ -29,7 +32,9 @@
         "ftext": 2,
         "strprop": 0,
         "bytecode": 0,
-        "resname_display": true
+        "display_maps": [
+          "resname"
+        ]
       }
     },
     {
@@ -38,6 +43,17 @@
         "ftext": 3,
         "strprop": 0,
         "bytecode": 0
+      }
+    },
+    {
+      "path": "/Game/CalaPlayer/UI/EditorUI/Widgets/WBP_ColorPreset",
+      "edits": {
+        "ftext": 0,
+        "strprop": 0,
+        "bytecode": 0,
+        "display_maps": [
+          "resname"
+        ]
       }
     },
     {
@@ -53,7 +69,14 @@
       "edits": {
         "ftext": 26,
         "strprop": 0,
-        "bytecode": 7
+        "bytecode": 7,
+        "display_maps": [
+          "anim",
+          "morph",
+          "bgm",
+          "ambient",
+          "sound"
+        ]
       }
     },
     {
@@ -62,7 +85,10 @@
         "ftext": 0,
         "strprop": 0,
         "bytecode": 0,
-        "resname_display": true
+        "display_maps": [
+          "resname",
+          "background"
+        ]
       }
     },
     {
@@ -79,7 +105,9 @@
         "ftext": 17,
         "strprop": 0,
         "bytecode": 17,
-        "resname_display": true
+        "display_maps": [
+          "resname"
+        ]
       }
     },
     {
@@ -87,7 +115,23 @@
       "edits": {
         "ftext": 0,
         "strprop": 0,
-        "bytecode": 1
+        "bytecode": 1,
+        "display_maps": [
+          "morph"
+        ]
+      }
+    },
+    {
+      "path": "/Game/CalaPlayer/UI/EditorUI/Widgets/WBP_SubslotContent",
+      "edits": {
+        "ftext": 0,
+        "strprop": 0,
+        "bytecode": 0,
+        "display_maps": [
+          "bgm",
+          "ambient",
+          "sound"
+        ]
       }
     },
     {
@@ -96,7 +140,9 @@
         "ftext": 1,
         "strprop": 0,
         "bytecode": 0,
-        "resname_display": true
+        "display_maps": [
+          "resname"
+        ]
       }
     },
     {
@@ -108,11 +154,25 @@
       }
     },
     {
+      "path": "/Game/CalaPlayer/UI/PlayerUI/Widgets/WBP_HistoryEntry",
+      "edits": {
+        "ftext": 0,
+        "strprop": 0,
+        "bytecode": 0,
+        "display_maps": [
+          "resname"
+        ]
+      }
+    },
+    {
       "path": "/Game/CalaPlayer/UI/PlayerUI/Widgets/WBP_TextContainer",
       "edits": {
         "ftext": 3,
         "strprop": 0,
-        "bytecode": 0
+        "bytecode": 0,
+        "display_maps": [
+          "resname"
+        ]
       }
     },
     {
@@ -121,7 +181,9 @@
         "ftext": 6,
         "strprop": 0,
         "bytecode": 0,
-        "resname_display": true
+        "display_maps": [
+          "resname"
+        ]
       }
     },
     {
@@ -192,6 +254,8 @@
     "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_CharacterEntry.uexp",
     "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_ColorPicker.uasset",
     "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_ColorPicker.uexp",
+    "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_ColorPreset.uasset",
+    "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_ColorPreset.uexp",
     "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_CreateCharacterPopup.uasset",
     "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_CreateCharacterPopup.uexp",
     "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_DetailsPanel.uasset",
@@ -204,10 +268,14 @@
     "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_Editor.uexp",
     "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_MorphListItem.uasset",
     "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_MorphListItem.uexp",
+    "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_SubslotContent.uasset",
+    "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_SubslotContent.uexp",
     "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_TimelineTrackHeaderItem.uasset",
     "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_TimelineTrackHeaderItem.uexp",
     "CalaPlayer/Content/CalaPlayer/UI/PlayerUI/Widgets/WBP_History.uasset",
     "CalaPlayer/Content/CalaPlayer/UI/PlayerUI/Widgets/WBP_History.uexp",
+    "CalaPlayer/Content/CalaPlayer/UI/PlayerUI/Widgets/WBP_HistoryEntry.uasset",
+    "CalaPlayer/Content/CalaPlayer/UI/PlayerUI/Widgets/WBP_HistoryEntry.uexp",
     "CalaPlayer/Content/CalaPlayer/UI/PlayerUI/Widgets/WBP_TextContainer.uasset",
     "CalaPlayer/Content/CalaPlayer/UI/PlayerUI/Widgets/WBP_TextContainer.uexp",
     "CalaPlayer/Content/CalaPlayer/UI/Widgets/WBP_ActiveCharacter.uasset",

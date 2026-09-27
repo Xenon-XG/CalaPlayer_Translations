@@ -48,6 +48,13 @@
   .dot.run{background:var(--warn);animation:pulse 1s infinite}
   .dot.ok{background:var(--ok)} .dot.bad{background:var(--bad)}
   @keyframes pulse{50%{opacity:.3}}
+  .tabs{display:flex;gap:4px;padding:10px 20px 0;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+  .tabs button{background:transparent;color:var(--muted);border:1px solid transparent;border-bottom:0;border-radius:8px 8px 0 0;padding:7px 14px;font-weight:600}
+  .tabs button:hover{color:var(--fg);background:var(--panel2)}
+  .tabs button.on{color:var(--fg);background:var(--bg);border-color:var(--line)}
+  .tabs .n{font-weight:400;color:var(--muted);font-size:11px;margin-left:4px}
+  .hint{color:var(--muted);font-size:12px;padding:8px 20px 0}
+  tr.dup input.cell{border-color:#5a2323;background:#241516}
   .toast{position:fixed;right:20px;bottom:20px;background:var(--panel2);border:1px solid var(--line);border-left:3px solid var(--accent);padding:10px 16px;border-radius:8px;box-shadow:0 8px 24px #0008;opacity:0;transform:translateY(8px);transition:.2s}
   .toast.show{opacity:1;transform:none}
   .toast.ok{border-left-color:var(--ok)} .toast.bad{border-left-color:var(--bad)}
@@ -56,10 +63,12 @@
 <body>
 <header>
   <h1>CalaPlayer 汉化工具</h1>
-  <span class="sub">改中文 → 一键打包安装</span>
+  <span class="sub">改界面文字和各类名称 → 一键打包安装</span>
   <span class="spacer"></span>
   <span id="gameStatus" class="status">检查游戏状态…</span>
 </header>
+
+<nav class="tabs" id="tabs"></nav>
 
 <div class="toolbar">
   <input id="search" type="text" placeholder="搜索原文或中文…">
@@ -71,9 +80,10 @@
   <button id="btnBuild">打包并安装到游戏</button>
 </div>
 
+<div class="hint" id="hint"></div>
 <div class="wrap">
   <table>
-    <thead><tr><th>原文（English）</th><th>中文</th><th>出现位置</th></tr></thead>
+    <thead id="thead"><tr><th>原文（English）</th><th>中文</th><th>出现位置</th></tr></thead>
     <tbody id="rows"></tbody>
   </table>
 </div>
@@ -89,8 +99,10 @@
 
 <script>
 const $ = s => document.querySelector(s);
-let DATA = {translations:{}, reference:[]};
-let work = {};         // {source: zh}
+let DATA = {translations:{}, reference:[], names:[]};
+let work = {};         // 界面文字 {source: zh}
+let names = {};        // 名称表 {id: {英文键: 中文}}
+let tab = "ui";        // 当前分页：ui 或名称表 id
 let ctxMap = {};       // {source: "出处文字"}
 let dirty = false;
 
@@ -119,7 +131,69 @@ function allSources(){
   return [...set].sort((a,b)=>a.toLowerCase().localeCompare(b.toLowerCase()));
 }
 
+const HINTS = {
+  ui: "游戏界面上的文字（按钮、标题、提示等）。",
+  chars: "角色名只改「显示」，存档和加载仍用英文名，旧剧本不受影响。",
+  anim: "动作名只改「显示」。注意：中文名不能重复——[+] 添加菜单选中中文后要换回英文。",
+  morph: "表情名只改「显示」。注意：中文名不能重复——[+] 添加菜单选中中文后要换回英文。",
+  bgm: "背景音乐名：详情面板下拉框和时间轴上显示的名字。",
+  ambient: "环境音名：详情面板下拉框和时间轴上显示的名字。",
+  sound: "音效名：详情面板下拉框和时间轴上显示的名字。",
+  background: "背景名：详情面板「背景」按钮上显示的名字（背景选择器本身只有缩略图）。"
+};
+function curMap(){ return (DATA.names||[]).find(m=>m.id===tab); }
+
+function renderTabs(){
+  const nav=$("#tabs"); nav.innerHTML="";
+  const mk=(id,label,total,done)=>{
+    const b=document.createElement("button"); b.className=(tab===id?"on":"");
+    b.innerHTML=label+'<span class="n"></span>'; b.querySelector(".n").textContent=done+"/"+total;
+    b.addEventListener("click",()=>{ tab=id; $("#search").value=""; renderAll(); });
+    nav.appendChild(b);
+  };
+  const srcs=allSources(); mk("ui","界面文字",srcs.length,srcs.filter(s=>(work[s]||"").trim()).length);
+  for(const m of DATA.names||[]){
+    const ks=Object.keys(m.data), w=names[m.id]||{};
+    mk(m.id,m.label,ks.length,ks.filter(k=>(w[k]||"").trim() && w[k]!==k).length);
+  }
+}
+function renderAll(){ renderTabs(); $("#hint").textContent=HINTS[tab]||""; render(); }
+
+function renderNames(m){
+  const q=$("#search").value.trim().toLowerCase();
+  const onlyU=$("#onlyUntrans").checked;
+  const w=names[m.id];
+  $("#thead").innerHTML="<tr><th>游戏内部名</th><th>中文</th><th>备注</th></tr>";
+  const dupOf={};
+  if(m.unique){ for(const k in w){ const v=(w[k]||"").trim(); if(v && v!==k) (dupOf[v]=dupOf[v]||[]).push(k); } }
+  const rows=$("#rows"); rows.innerHTML="";
+  let shown=0,total=0,done=0,dups=0;
+  for(const k of Object.keys(m.data)){
+    total++;
+    const zh=w[k]||""; const ok=zh.trim() && zh!==k; if(ok) done++;
+    const others=(m.unique && ok) ? (dupOf[zh.trim()]||[]).filter(x=>x!==k) : [];
+    if(others.length) dups++;
+    if(onlyU && ok) continue;
+    if(q && !(k.toLowerCase().includes(q) || zh.toLowerCase().includes(q))) continue;
+    shown++;
+    const tr=document.createElement("tr");
+    if(!ok) tr.className="untranslated"; if(others.length) tr.classList.add("dup");
+    const td1=document.createElement("td"); td1.innerHTML='<span class="src"></span>'; td1.querySelector(".src").textContent=k;
+    const td2=document.createElement("td"); td2.className="zh";
+    const inp=document.createElement("input"); inp.className="cell"; inp.value=zh; inp.placeholder="留空 = 保持英文";
+    inp.addEventListener("input",()=>{ w[k]=inp.value; setDirty(true); tr.classList.toggle("untranslated",!inp.value.trim()); });
+    inp.addEventListener("change",()=>renderAll());
+    td2.appendChild(inp);
+    const td3=document.createElement("td"); td3.innerHTML='<span class="ctx"></span>';
+    td3.querySelector(".ctx").textContent = others.length ? ("⚠ 与 "+others.join("、")+" 重名") : "";
+    tr.append(td1,td2,td3); rows.appendChild(tr);
+  }
+  $("#count").textContent = `已译 ${done}/${total} · 显示 ${shown}` + (dups?` · ⚠ ${dups} 条重名`:"");
+}
+
 function render(){
+  const m=curMap(); if(m) return renderNames(m);
+  $("#thead").innerHTML="<tr><th>原文（English）</th><th>中文</th><th>出现位置</th></tr>";
   const q=$("#search").value.trim().toLowerCase();
   const onlyU=$("#onlyUntrans").checked;
   const rows=$("#rows"); rows.innerHTML="";
@@ -151,7 +225,8 @@ function render(){
 async function load(){
   const r=await fetch("/api/data"); DATA=await r.json();
   work=Object.assign({}, DATA.translations);
-  buildCtx(); render(); gameStatus(DATA.gameRunning);
+  names={}; for(const m of DATA.names||[]) names[m.id]=Object.assign({}, m.data);
+  buildCtx(); renderAll(); gameStatus(DATA.gameRunning);
 }
 function gameStatus(running){
   const el=$("#gameStatus");
@@ -162,9 +237,9 @@ async function refreshStatus(){ try{const r=await fetch("/api/status");gameStatu
 
 async function save(){
   const r=await fetch("/api/save",{method:"POST",headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({translations:work})});
+    body:JSON.stringify({translations:work, names})});
   const j=await r.json();
-  if(j.ok){ setDirty(false); toast("已保存 "+j.count+" 条翻译","ok"); render(); }
+  if(j.ok){ setDirty(false); toast("已保存","ok"); renderAll(); }
   else toast("保存失败："+(j.error||""),"bad");
 }
 
@@ -175,7 +250,7 @@ async function build(){
   $("#logtitle").textContent="打包中…";
   try{
     const r=await fetch("/api/build",{method:"POST",headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({translations:work})});
+      body:JSON.stringify({translations:work, names})});
     const j=await r.json();
     setDirty(false);
     log.textContent=j.log||"(无输出)";

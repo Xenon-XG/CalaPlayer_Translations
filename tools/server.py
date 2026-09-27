@@ -3,8 +3,8 @@
 纯标准库，无需 pip 安装。双击「打开汉化工具.bat」即会启动它并打开浏览器。
 
   GET  /                 前端页面 index.html
-  GET  /api/data         返回 translations + reference + 游戏是否运行
-  POST /api/save         保存 translations.json（保留原有键顺序，新词追加在后）
+  GET  /api/data         返回 translations + reference + 各名称表 + 游戏是否运行
+  POST /api/save         保存 translations.json 和各名称表（保留原有键顺序）
   POST /api/build        运行 rebuild.ps1 -NoPause（应用翻译→打包→装进游戏），回传日志
   GET  /api/status       仅查询游戏是否在运行
 """
@@ -34,6 +34,22 @@ TRANS = _find(os.path.join(HERE, "translations.json"),
 REF = _find(os.path.join(HERE, "所有可翻译文本.json"),
             os.path.join(HERE, "..", "reference", "所有可翻译文本.json"))
 INDEX = os.path.join(HERE, "index.html")
+
+# 名称表：只改游戏里「显示」的名字，存盘/加载用的英文键不变。
+# unique=True 的表会被反查（[+] 添加选择器选中中文后要换回英文），中文译名不能重复。
+NAME_MAPS = [
+    ("chars",      "角色名",   "resname_map.json",    False),
+    ("anim",       "动作",     "anim_map.json",       True),
+    ("morph",      "表情",     "morph_map.json",      True),
+    ("bgm",        "背景音乐", "bgm_map.json",        False),
+    ("ambient",    "环境音",   "ambient_map.json",    False),
+    ("sound",      "音效",     "sound_map.json",      False),
+    ("background", "背景",     "background_map.json", False),
+]
+
+
+def map_path(fname):
+    return _find(os.path.join(HERE, fname), os.path.join(HERE, "..", fname))
 REBUILD = os.path.join(HERE, "rebuild.ps1")
 
 
@@ -43,6 +59,52 @@ def load_json(path, default):
             return json.load(f)
     except Exception:
         return default
+
+
+def load_names():
+    out = []
+    for mid, label, fname, unique in NAME_MAPS:
+        path = map_path(fname)
+        if os.path.isfile(path):
+            out.append({"id": mid, "label": label, "file": fname, "unique": unique,
+                        "data": load_json(path, {})})
+    return out
+
+
+def save_names(names):
+    """写回各名称表：键集合和顺序以原文件为准（键是游戏里的英文名，不能增删）。"""
+    n = 0
+    for mid, label, fname, unique in NAME_MAPS:
+        if mid not in names:
+            continue
+        path = map_path(fname)
+        old = load_json(path, None)
+        if old is None:
+            continue
+        new = names[mid] or {}
+        merged = {k: str(new.get(k, v) if new.get(k) is not None else v).strip() for k, v in old.items()}
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump(merged, f, ensure_ascii=False, indent=2)
+            f.write("\n")
+        n += 1
+    return n
+
+
+def name_conflicts():
+    """需要反查的表里，同一个中文对应多个英文（打包会失败）。"""
+    bad = []
+    for mid, label, fname, unique in NAME_MAPS:
+        if not unique:
+            continue
+        seen = {}
+        for k, v in load_json(map_path(fname), {}).items():
+            v = str(v).strip()
+            if v and v != k:
+                seen.setdefault(v, []).append(k)
+        for v, ks in seen.items():
+            if len(ks) > 1:
+                bad.append("%s：「%s」同时对应 %s" % (label, v, "、".join(ks)))
+    return bad
 
 
 def game_running():
@@ -119,6 +181,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
             self._json({
                 "translations": load_json(TRANS, {}),
                 "reference": load_json(REF, []),
+                "names": load_names(),
                 "gameRunning": game_running(),
             })
         elif self.path == "/api/status":
@@ -136,16 +199,22 @@ class Handler(http.server.BaseHTTPRequestHandler):
         if self.path == "/api/save":
             try:
                 n = save_translations(payload.get("translations", {}))
+                save_names(payload.get("names", {}))
                 self._json({"ok": True, "count": n})
             except Exception as e:
                 self._json({"ok": False, "error": str(e)}, 500)
         elif self.path == "/api/build":
             # 保存后再打包（前端一般已先调 save，这里兜底一次）
-            if "translations" in payload:
-                try:
+            try:
+                if "translations" in payload:
                     save_translations(payload["translations"])
-                except Exception:
-                    pass
+                save_names(payload.get("names", {}))
+            except Exception:
+                pass
+            bad = name_conflicts()
+            if bad:
+                self._json({"ok": False, "code": 6, "log": "[X] 以下译名重复，请改成不同的中文再打包：\n" + "\n".join(bad)})
+                return
             code, log = run_build()
             self._json({"ok": code == 0, "code": code, "log": log})
         else:

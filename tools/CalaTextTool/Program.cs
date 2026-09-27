@@ -58,6 +58,14 @@ internal static class Program
             if (args.Length >= 2 && args[0] == "bccheck") { Maps = TryLoadUsmap(args.Length >= 3 ? args[2] : null); return BcCheck(args[1]); }
             if (args.Length >= 3 && args[0] == "bcswitch") { Maps = TryLoadUsmap(args.Length >= 4 ? args[3] : null); return BcSwitch(args[1], args[2]); }
             if (args.Length >= 3 && args[0] == "bcfuncs") { Maps = TryLoadUsmap(args.Length >= 4 ? args[3] : null); return BcFuncs(args[1], args[2]); }
+            if (args.Length >= 3 && args[0] == "disasm") { Maps = TryLoadUsmap(args.Length >= 4 ? args[3] : null); return Disasm(args[1], args[2]); }
+            if (args.Length >= 3 && args[0] == "injectlabel") { Maps = TryLoadUsmap(args.Length >= 4 ? args[3] : null); return InjectLabel(args[1], args[2]); }
+            if (args.Length >= 3 && args[0] == "imports") { Maps = TryLoadUsmap(args.Length >= 4 ? args[3] : null); return Imports(args[1], args[2]); }
+            if (args.Length >= 3 && args[0] == "injectmap") { Maps = TryLoadUsmap(args.Length >= 4 ? args[3] : null); return InjectMap3(args[1], args[2]); }
+            if (args.Length >= 5 && args[0] == "injectrender") { Maps = TryLoadUsmap(args.Length >= 6 ? args[5] : null); return InjectRender(args[1], args[2], args[3], args[4]); }
+            if (args.Length >= 5 && args[0] == "injectconcat") { Maps = TryLoadUsmap(args.Length >= 6 ? args[5] : null); return InjectConcat(args[1], args[2], args[3], args[4]); }
+            if (args.Length >= 3 && args[0] == "injectswtest") { Maps = TryLoadUsmap(args.Length >= 4 ? args[3] : null); return InjectSwTest(args[1], args[2]); }
+            if (args.Length >= 2 && args[0] == "injectimportonly") { Maps = TryLoadUsmap(args.Length >= 3 ? args[2] : null); return InjectImportOnly(args[1]); }
             if (args.Length >= 3 && args[0] == "bcentry") { Maps = TryLoadUsmap(args.Length >= 4 ? args[3] : null); return BcUberEntry(args[1], args[2]); }
             if (args.Length >= 2 && args[0] == "stats") { Maps = TryLoadUsmap(args.Length >= 3 ? args[2] : null); return Stats(args[1]); }
             if (args.Length >= 4 && args[0] == "apply") { Maps = TryLoadUsmap(args.Length >= 5 ? args[4] : null); return Apply(args[1], args[2], args[3]); }
@@ -227,6 +235,15 @@ internal static class Program
                 {
                     if (e is EX_SwitchValue sw)
                     {
+                        uint sz = sw.GetSize(asset);
+                        uint defOff = all.Where(x => ReferenceEquals(x.e, sw.DefaultTerm)).Select(x => x.o).FirstOrDefault();
+                        Console.WriteLine($"  SWITCH @{o} size={sz} o+size={o + sz} EndGoto={sw.EndGotoOffset} DefaultTermOff={defOff}");
+                        for (int ci = 0; ci < sw.Cases.Length; ci++)
+                        {
+                            uint civOff = all.Where(x => ReferenceEquals(x.e, sw.Cases[ci].CaseIndexValueTerm)).Select(x => x.o).FirstOrDefault();
+                            uint ctOff = all.Where(x => ReferenceEquals(x.e, sw.Cases[ci].CaseTerm)).Select(x => x.o).FirstOrDefault();
+                            Console.WriteLine($"    case[{ci}] valOff={civOff} NextOffset={sw.Cases[ci].NextOffset} termOff={ctOff}");
+                        }
                         Console.WriteLine($"  SWITCH @{o} EndGoto={sw.EndGotoOffset} (aligned={startsSet.Contains(sw.EndGotoOffset) || sw.EndGotoOffset == total})");
                         // nearest starts around EndGoto
                         var belowList = starts.Where(s => s <= sw.EndGotoOffset).ToList();
@@ -304,6 +321,693 @@ internal static class Program
                 }
             }
         }
+        return 0;
+    }
+
+    // ---- readable bytecode disassembly (diagnostic) --------------------
+    static string PtrName(object ptr)
+    {
+        if (ptr == null) return "<null-ptr>";
+        try
+        {
+            var t = ptr.GetType();
+            var neu = t.GetField("New")?.GetValue(ptr) ?? t.GetProperty("New")?.GetValue(ptr);
+            if (neu != null)
+            {
+                var path = neu.GetType().GetField("Path")?.GetValue(neu) as System.Collections.IEnumerable;
+                if (path != null)
+                {
+                    var parts = new List<string>();
+                    foreach (var p in path) parts.Add(p?.ToString());
+                    if (parts.Count > 0) return string.Join(".", parts);
+                }
+            }
+            var old = t.GetField("Old")?.GetValue(ptr) ?? t.GetProperty("Old")?.GetValue(ptr);
+            if (old is FPackageIndex fp) return "idx:" + fp.Index;
+        }
+        catch { }
+        return "<ptr?>";
+    }
+
+    static void PrintExpr(UAsset asset, KismetExpression e, int depth, string label)
+    {
+        string ind = new string(' ', depth * 2);
+        var extra = new List<string>();
+        switch (e)
+        {
+            case EX_IntConst i: extra.Add("=" + i.Value); break;
+            case EX_StringConst s: extra.Add("\"" + s.Value + "\""); break;
+            case EX_UnicodeStringConst u: extra.Add("u\"" + u.Value + "\""); break;
+            case EX_NameConst n: extra.Add("name=" + Nm(n.Value)); break;
+            case EX_ByteConst b: extra.Add("=" + b.Value); break;
+            case EX_TextConst tc: extra.Add("text[" + tc.Value.TextLiteralType + "]"); break;
+            case EX_CallMath cm: extra.Add("-> " + ResolveIdx(asset, cm.StackNode)); break;
+            case EX_FinalFunction ff: extra.Add("-> " + ResolveIdx(asset, ff.StackNode)); break;
+            case EX_VirtualFunction vf: extra.Add("-> " + Nm(vf.VirtualFunctionName)); break;
+            case EX_LocalVariable lv: extra.Add(PtrName(lv.Variable)); break;
+            case EX_InstanceVariable iv: extra.Add(PtrName(iv.Variable)); break;
+            case EX_LocalOutVariable ov: extra.Add(PtrName(ov.Variable)); break;
+            case EX_Context ctx: extra.Add("off=" + ctx.Offset); break;
+            case EX_JumpIfNot j: extra.Add("->@" + j.CodeOffset); break;
+            case EX_Jump j: extra.Add("->@" + j.CodeOffset); break;
+        }
+        Console.WriteLine($"{ind}{(label != null ? label + ": " : "")}{e.GetType().Name}{(extra.Count > 0 ? " " + string.Join(" ", extra) : "")}");
+        // recurse into child expressions via reflection
+        var ty = e.GetType();
+        foreach (var f in ty.GetFields(BindingFlags.Public | BindingFlags.Instance))
+            EmitChild(asset, f.Name, f.GetValue(e), depth + 1);
+        foreach (var p in ty.GetProperties(BindingFlags.Public | BindingFlags.Instance))
+        {
+            if (p.GetIndexParameters().Length != 0) continue;
+            object v; try { v = p.GetValue(e); } catch { continue; }
+            EmitChild(asset, p.Name, v, depth + 1);
+        }
+    }
+
+    static void EmitChild(UAsset asset, string label, object v, int depth)
+    {
+        if (v is KismetExpression ke) { PrintExpr(asset, ke, depth, label); return; }
+        if (v is KismetExpression[] arr) { for (int i = 0; i < arr.Length; i++) if (arr[i] != null) PrintExpr(asset, arr[i], depth, $"{label}[{i}]"); return; }
+        if (v is string || v is byte[]) return;
+        if (v is System.Collections.IEnumerable en)
+        {
+            foreach (var it in en)
+            {
+                if (it is KismetExpression k2) { PrintExpr(asset, k2, depth, label); continue; }
+                var tt = it?.GetType();
+                if (tt != null && tt.Name.Contains("SwitchCase"))
+                {
+                    var civ = tt.GetField("CaseIndexValueTerm")?.GetValue(it) as KismetExpression;
+                    var ct = tt.GetField("CaseTerm")?.GetValue(it) as KismetExpression;
+                    if (civ != null) PrintExpr(asset, civ, depth, label + ".caseVal");
+                    if (ct != null) PrintExpr(asset, ct, depth, label + ".caseTerm");
+                }
+            }
+        }
+    }
+
+    static int Imports(string inputDir, string fileSub)
+    {
+        foreach (var path in UAssets(inputDir).OrderBy(x => x))
+        {
+            if (fileSub.Length > 0 && !Path.GetFileName(path).Contains(fileSub)) continue;
+            UAsset asset; try { asset = Load(path); } catch { continue; }
+            Console.WriteLine($"==== {Path.GetFileName(path)}  imports={asset.Imports.Count} ====");
+            for (int i = 0; i < asset.Imports.Count; i++)
+            {
+                var im = asset.Imports[i];
+                Console.WriteLine($"  [-{i + 1}] pkg={Nm(im.ClassPackage)} cls={Nm(im.ClassName)} name={Nm(im.ObjectName)} outer={im.OuterIndex?.Index}");
+            }
+        }
+        return 0;
+    }
+
+    static int Disasm(string inputDir, string fnFilter)
+    {
+        foreach (var path in UAssets(inputDir).OrderBy(x => x))
+        {
+            UAsset asset;
+            try { asset = Load(path); } catch { continue; }
+            foreach (var exp in asset.Exports)
+            {
+                if (exp is not StructExport se || se.ScriptBytecode == null) continue;
+                string fn = Nm(exp.ObjectName) ?? "";
+                if (fnFilter.Length > 0 && !fn.Contains(fnFilter)) continue;
+                var (all, total) = VisitAll(asset, se.ScriptBytecode);
+                Console.WriteLine($"\n==== {Path.GetFileName(path)} :: {fn}  (stmts={se.ScriptBytecode.Length} size={total}) ====");
+                uint off = 0;
+                foreach (var top in se.ScriptBytecode)
+                {
+                    Console.WriteLine($"-- @{off} --");
+                    PrintExpr(asset, top, 0, null);
+                    off += top.GetSize(asset);
+                }
+            }
+        }
+        return 0;
+    }
+
+    // ---- PoC: inject a display label transform into WBP_DropdownButtonContent ----
+    // Replaces the argument of TextBlock.SetText(In Text) with a test Chinese constant, to prove
+    // the label is editable from this one widget and that selection/value are unaffected.
+    static int InjectLabel(string inputDir, string testText)
+    {
+        string target = null;
+        foreach (var p in UAssets(inputDir))
+            if (Path.GetFileName(p) == "WBP_DropdownButtonContent.uasset") { target = p; break; }
+        if (target == null) { Console.Error.WriteLine("找不到 WBP_DropdownButtonContent.uasset"); return 2; }
+        var asset = Load(target);
+        var fnDeltas = new Dictionary<string, List<(uint pos, int delta)>>();
+        int edits = 0;
+
+        foreach (var exp in asset.Exports)
+        {
+            if (exp is not StructExport se || se.ScriptBytecode == null) continue;
+            var (all, total) = VisitAll(asset, se.ScriptBytecode);
+            var preOff = new Dictionary<KismetExpression, uint>();
+            foreach (var (e, o) in all) preOff[e] = o;
+
+            var deltas = new List<(uint pos, int delta)>();
+            foreach (var (e, o) in all)
+            {
+                if (e is EX_VirtualFunction vf && Nm(vf.VirtualFunctionName) == "SetText"
+                    && vf.Parameters != null && vf.Parameters.Length >= 1
+                    && vf.Parameters[0] is EX_InstanceVariable iv && PtrName(iv.Variable).Contains("In Text"))
+                {
+                    var old = vf.Parameters[0];
+                    if (!preOff.TryGetValue(old, out uint pos)) continue;
+                    var neu = new EX_TextConst
+                    {
+                        Value = new FScriptText
+                        {
+                            TextLiteralType = EBlueprintTextLiteralType.InvariantText,
+                            InvariantLiteralString = new EX_UnicodeStringConst { Value = testText }
+                        }
+                    };
+                    vf.Parameters[0] = neu;
+                    deltas.Add((pos, (int)neu.GetSize(asset) - (int)old.GetSize(asset)));
+                    edits++;
+                    Console.WriteLine($"  注入 @{pos}: SetText(In Text) -> SetText(\"{testText}\")  Δsize={(int)neu.GetSize(asset) - (int)old.GetSize(asset)}");
+                }
+            }
+            if (deltas.Count == 0) continue;
+
+            foreach (var (e, o) in all)
+                foreach (var (get, set) in AbsOffsets(e))
+                    set(ShiftBy(get(), deltas));
+            foreach (var (e, o) in all)
+                switch (e)
+                {
+                    case EX_Context c: c.Offset = c.ContextExpression.GetSize(asset); break;
+                    case EX_Skip s: s.CodeOffset = s.SkipExpression.GetSize(asset); break;
+                }
+            fnDeltas[Nm(exp.ObjectName)] = deltas;
+        }
+
+        if (edits == 0) { Console.Error.WriteLine("没找到 SetText(In Text) 注入点"); return 3; }
+
+        // pass 2: shift hardcoded ExecuteUbergraph entry offsets in callers
+        foreach (var exp in asset.Exports)
+        {
+            if (exp is not StructExport se || se.ScriptBytecode == null) continue;
+            var (all, _) = VisitAll(asset, se.ScriptBytecode);
+            foreach (var (e, o) in all)
+                if (e is EX_FinalFunction ff && ff.Parameters != null && ff.Parameters.Length > 0 && ff.Parameters[0] is EX_IntConst ic)
+                {
+                    string tgt = ResolveIdx(asset, ff.StackNode);
+                    if (tgt != null && fnDeltas.TryGetValue(tgt, out var dl)) ic.Value = (int)ShiftBy((uint)ic.Value, dl);
+                }
+        }
+
+        int bad = VerifyBytecode(asset);
+        Console.WriteLine($"verify-fail: {bad}");
+        if (bad > 0) { Console.Error.WriteLine("字节码校验不过，放弃写入"); return 4; }
+        asset.Write(target);
+        try { var rt = new UAsset(target, EV, Maps); if (VerifyBytecode(rt) > 0) throw new Exception("post-write inconsistent"); }
+        catch (Exception ve) { Console.Error.WriteLine($"重解析校验失败: {ve.Message}"); return 5; }
+        Console.WriteLine($"[ok] 注入完成并通过校验，写回 {Path.GetFileName(target)}（{edits} 处）");
+        return 0;
+    }
+
+    // ---- Resource-name display map: inject a String->ZH switch into WBP_DropdownButtonContent ----
+    // Replaces SetText(In Text) with SetText( Switch( Conv_TextToString(In Text) : "EN"->Text("ZH") ... default In Text ) ).
+    // Display-only: the outer ComboBox's selected FName value is untouched.
+    static int InjectMap(string inputDir, string mapJson)
+    {
+        var raw = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(mapJson)) ?? new Dictionary<string, string>();
+        var map = raw.Where(kv => !string.IsNullOrEmpty(kv.Value) && kv.Value != kv.Key).ToList();
+        if (map.Count == 0) { Console.Error.WriteLine("map 为空"); return 2; }
+
+        string target = UAssets(inputDir).FirstOrDefault(p => Path.GetFileName(p) == "WBP_DropdownButtonContent.uasset");
+        if (target == null) { Console.Error.WriteLine("找不到 WBP_DropdownButtonContent.uasset"); return 2; }
+        var asset = Load(target);
+
+        FPackageIndex ImpIdx(string obj)
+        {
+            for (int i = 0; i < asset.Imports.Count; i++)
+                if (Nm(asset.Imports[i].ObjectName) == obj) return FPackageIndex.FromImport(i);
+            return null;
+        }
+        var enginePkg = ImpIdx("/Script/Engine") ?? asset.AddImport(new Import("/Script/CoreUObject", "Package", new FPackageIndex(0), "/Script/Engine", false, asset));
+        var ktlClass = ImpIdx("KismetTextLibrary") ?? asset.AddImport(new Import("/Script/CoreUObject", "Class", enginePkg, "KismetTextLibrary", false, asset));
+        var convFunc = ImpIdx("Conv_TextToString") ?? asset.AddImport(new Import("/Script/CoreUObject", "Object", ktlClass, "Conv_TextToString", false, asset));
+        Console.WriteLine($"Conv_TextToString import = {convFunc.Index}  (cases={map.Count})");
+
+        var fnDeltas = new Dictionary<string, List<(uint pos, int delta)>>();
+        var mySwitches = new List<EX_SwitchValue>();
+        int edits = 0;
+
+        foreach (var exp in asset.Exports)
+        {
+            if (exp is not StructExport se || se.ScriptBytecode == null) continue;
+            var (all, total) = VisitAll(asset, se.ScriptBytecode);
+            var preOff = new Dictionary<KismetExpression, uint>();
+            foreach (var (e, o) in all) preOff[e] = o;
+
+            var deltas = new List<(uint pos, int delta)>();
+            foreach (var (e, o) in all)
+            {
+                if (e is EX_VirtualFunction vf && Nm(vf.VirtualFunctionName) == "SetText"
+                    && vf.Parameters != null && vf.Parameters.Length >= 1
+                    && vf.Parameters[0] is EX_InstanceVariable iv && PtrName(iv.Variable).Contains("In Text"))
+                {
+                    var old = vf.Parameters[0];
+                    if (!preOff.TryGetValue(old, out uint pos)) continue;
+                    var ptr = ((EX_InstanceVariable)old).Variable;
+                    EX_InstanceVariable MkIn() => new EX_InstanceVariable { Variable = ptr };
+                    var idxTerm = new EX_CallMath { StackNode = convFunc, Parameters = new KismetExpression[] { MkIn() } };
+                    var cases = map.Select(kv => new FKismetSwitchCase(
+                        new EX_StringConst { Value = kv.Key }, 0u,
+                        new EX_TextConst { Value = new FScriptText { TextLiteralType = EBlueprintTextLiteralType.InvariantText, InvariantLiteralString = new EX_UnicodeStringConst { Value = kv.Value } } }
+                    )).ToArray();
+                    var sw = new EX_SwitchValue { EndGotoOffset = 0, IndexTerm = idxTerm, Cases = cases, DefaultTerm = MkIn() };
+                    vf.Parameters[0] = sw;
+                    mySwitches.Add(sw);
+                    deltas.Add((pos, (int)sw.GetSize(asset) - (int)old.GetSize(asset)));
+                    edits++;
+                    Console.WriteLine($"  注入 switch @{pos}  Δsize={(int)sw.GetSize(asset) - (int)old.GetSize(asset)}");
+                }
+            }
+            if (deltas.Count == 0) continue;
+
+            foreach (var (e, o) in all)
+                foreach (var (get, set) in AbsOffsets(e))
+                    set(ShiftBy(get(), deltas));
+            foreach (var (e, o) in all)
+                switch (e)
+                {
+                    case EX_Context c: c.Offset = c.ContextExpression.GetSize(asset); break;
+                    case EX_Skip s: s.CodeOffset = s.SkipExpression.GetSize(asset); break;
+                }
+            fnDeltas[Nm(exp.ObjectName)] = deltas;
+        }
+        if (edits == 0) { Console.Error.WriteLine("没找到 SetText(In Text) 注入点"); return 3; }
+
+        // pass 2: shift hardcoded ExecuteUbergraph entry offsets in callers
+        foreach (var exp in asset.Exports)
+        {
+            if (exp is not StructExport se || se.ScriptBytecode == null) continue;
+            var (all, _) = VisitAll(asset, se.ScriptBytecode);
+            foreach (var (e, o) in all)
+                if (e is EX_FinalFunction ff && ff.Parameters != null && ff.Parameters.Length > 0 && ff.Parameters[0] is EX_IntConst ic)
+                {
+                    string tgt = ResolveIdx(asset, ff.StackNode);
+                    if (tgt != null && fnDeltas.TryGetValue(tgt, out var dl)) ic.Value = (int)ShiftBy((uint)ic.Value, dl);
+                }
+        }
+
+        // compute the new switch offsets from final positions
+        foreach (var exp in asset.Exports)
+        {
+            if (exp is not StructExport se || se.ScriptBytecode == null) continue;
+            var (all, _) = VisitAll(asset, se.ScriptBytecode);
+            var offOf = new Dictionary<KismetExpression, uint>();
+            foreach (var (e, o) in all) offOf[e] = o;
+            foreach (var (e, o) in all)
+            {
+                if (e is EX_SwitchValue sw && mySwitches.Contains(sw))
+                {
+                    sw.EndGotoOffset = o + sw.GetSize(asset);
+                    for (int i = 0; i < sw.Cases.Length; i++)
+                    {
+                        KismetExpression nextStart = (i + 1 < sw.Cases.Length) ? sw.Cases[i + 1].CaseIndexValueTerm : sw.DefaultTerm;
+                        sw.Cases[i].NextOffset = offOf[nextStart];
+                    }
+                    Console.WriteLine($"  switch @{o}: EndGoto={sw.EndGotoOffset} nexts=[{string.Join(",", sw.Cases.Select(c => c.NextOffset))}]");
+                }
+            }
+        }
+
+        int bad = VerifyBytecode(asset);
+        Console.WriteLine($"verify-fail: {bad}");
+        if (bad > 0) { Console.Error.WriteLine("校验不过，放弃"); return 4; }
+        asset.Write(target);
+        try { var rt = new UAsset(target, EV, Maps); if (VerifyBytecode(rt) > 0) throw new Exception("post-write inconsistent"); }
+        catch (Exception ve) { Console.Error.WriteLine($"重解析校验失败: {ve.Message}"); return 5; }
+        Console.WriteLine($"[ok] 条件查表注入完成，写回 {Path.GetFileName(target)}（{edits} 处，{map.Count} 条映射）");
+        return 0;
+    }
+
+    // Resource-name display map via statement-level JumpIfNot (avoids the SwitchValue index-typing hang).
+    // After `In Text = <incoming name>`, insert per entry:
+    //   JumpIfNot( EqualEqual_StrStr( Conv_TextToString(In Text), "EN" ) ) -> <next>
+    //   In Text = Text("ZH")
+    // In Text is an instance var, so the reassignment carries to the later visual SetText.
+    static int InjectMap2(string inputDir, string mapJson)
+    {
+        var raw = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(mapJson)) ?? new Dictionary<string, string>();
+        var map = raw.Where(kv => !string.IsNullOrEmpty(kv.Value) && kv.Value != kv.Key).ToList();
+        if (map.Count == 0) { Console.Error.WriteLine("map 为空"); return 2; }
+        string target = UAssets(inputDir).FirstOrDefault(p => Path.GetFileName(p) == "WBP_DropdownButtonContent.uasset");
+        if (target == null) { Console.Error.WriteLine("找不到 widget"); return 2; }
+        var asset = Load(target);
+
+        FPackageIndex ImpIdx(string obj) { for (int i = 0; i < asset.Imports.Count; i++) if (Nm(asset.Imports[i].ObjectName) == obj) return FPackageIndex.FromImport(i); return null; }
+        var enginePkg = ImpIdx("/Script/Engine") ?? asset.AddImport(new Import("/Script/CoreUObject", "Package", new FPackageIndex(0), "/Script/Engine", false, asset));
+        FPackageIndex EnsureClass(string cls) => ImpIdx(cls) ?? asset.AddImport(new Import("/Script/CoreUObject", "Class", enginePkg, cls, false, asset));
+        FPackageIndex EnsureFunc(string fn, FPackageIndex cls) => ImpIdx(fn) ?? asset.AddImport(new Import("/Script/CoreUObject", "Object", cls, fn, false, asset));
+        var convIdx = EnsureFunc("Conv_TextToString", EnsureClass("KismetTextLibrary"));
+        var eqIdx = EnsureFunc("EqualEqual_StrStr", EnsureClass("KismetStringLibrary"));
+
+        StructExport se = null; int li = -1; EX_Let origLet = null;
+        foreach (var exp in asset.Exports)
+        {
+            if (exp is StructExport s && s.ScriptBytecode != null && (Nm(exp.ObjectName) ?? "").Contains("ExecuteUbergraph"))
+            {
+                for (int i = 0; i < s.ScriptBytecode.Length; i++)
+                    if (s.ScriptBytecode[i] is EX_Let lt && lt.Variable is EX_InstanceVariable ivv && PtrName(ivv.Variable).Contains("In Text"))
+                    { se = s; li = i; origLet = lt; break; }
+                if (se != null) break;
+            }
+        }
+        if (se == null) { Console.Error.WriteLine("找不到 In Text 赋值语句"); return 3; }
+        var inTextPtr = ((EX_InstanceVariable)origLet.Variable).Variable;
+        var letValue = origLet.Value;
+
+        var (allPre, total) = VisitAll(asset, se.ScriptBytecode);
+        var offPre = new Dictionary<KismetExpression, uint>(); foreach (var (e, o) in allPre) offPre[e] = o;
+        var origNext = se.ScriptBytecode[li + 1];
+        uint P = offPre[origNext];
+
+        EX_InstanceVariable MkIn() => new EX_InstanceVariable { Variable = inTextPtr };
+        var newStmts = new List<KismetExpression>();
+        var jins = new List<EX_JumpIfNot>();
+        foreach (var kv in map)
+        {
+            var conv = new EX_CallMath { StackNode = convIdx, Parameters = new KismetExpression[] { MkIn() } };
+            var cmp = new EX_CallMath { StackNode = eqIdx, Parameters = new KismetExpression[] { conv, new EX_StringConst { Value = kv.Key } } };
+            var jin = new EX_JumpIfNot { CodeOffset = 0, BooleanExpression = cmp };
+            var let = new EX_Let { Value = letValue, Variable = MkIn(), Expression = new EX_TextConst { Value = new FScriptText { TextLiteralType = EBlueprintTextLiteralType.InvariantText, InvariantLiteralString = new EX_UnicodeStringConst { Value = kv.Value } } } };
+            newStmts.Add(jin); newStmts.Add(let); jins.Add(jin);
+        }
+        var listStmts = se.ScriptBytecode.ToList();
+        listStmts.InsertRange(li + 1, newStmts);
+        se.ScriptBytecode = listStmts.ToArray();
+
+        int D = newStmts.Sum(s => (int)s.GetSize(asset));
+        var deltas = new List<(uint pos, int delta)> { (P == 0 ? 0u : P - 1, D) };
+        foreach (var (e, o) in allPre) foreach (var (get, set) in AbsOffsets(e)) set(ShiftBy(get(), deltas));
+        var fnDeltas = new Dictionary<string, List<(uint pos, int delta)>> { { Nm(se.ObjectName) ?? "", deltas } };
+
+        foreach (var exp in asset.Exports)
+        {
+            if (exp is not StructExport s2 || s2.ScriptBytecode == null) continue;
+            var (all2, _) = VisitAll(asset, s2.ScriptBytecode);
+            foreach (var (e, o) in all2) if (e is EX_FinalFunction ff && ff.Parameters != null && ff.Parameters.Length > 0 && ff.Parameters[0] is EX_IntConst ic)
+            { string tgt = ResolveIdx(asset, ff.StackNode); if (tgt != null && fnDeltas.TryGetValue(tgt, out var dl)) ic.Value = (int)ShiftBy((uint)ic.Value, dl); }
+        }
+
+        var (allPost, _) = VisitAll(asset, se.ScriptBytecode);
+        var offPost = new Dictionary<KismetExpression, uint>(); foreach (var (e, o) in allPost) offPost[e] = o;
+        for (int i = 0; i < jins.Count; i++)
+        {
+            KismetExpression tgt = (i + 1 < jins.Count) ? (KismetExpression)jins[i + 1] : origNext;
+            jins[i].CodeOffset = offPost[tgt];
+        }
+
+        int bad = VerifyBytecode(asset);
+        Console.WriteLine($"insert D={D} P={P} entries={map.Count} verify-fail={bad}");
+        if (bad > 0) { Console.Error.WriteLine("校验不过"); return 4; }
+        asset.Write(target);
+        try { var rt = new UAsset(target, EV, Maps); if (VerifyBytecode(rt) > 0) throw new Exception("post-write inconsistent"); }
+        catch (Exception ve) { Console.Error.WriteLine("重解析失败: " + ve.Message); return 5; }
+        Console.WriteLine($"[ok] JumpIfNot 查表注入完成（{map.Count} 条映射）");
+        return 0;
+    }
+
+    // Resource-name display map v3: translate ONLY the visual SetText render, leave In Text untouched
+    // (the consumer reads In Text as the functional key, so In Text must stay English).
+    // Before the `TextBlock.SetText(In Text)` statement, per entry insert:
+    //   JumpIfNot( EqualEqual_StrStr(Conv_TextToString(In Text),"EN") ) -> next
+    //   TextBlock.SetText( Text("ZH") )      // a cloned context, different literal
+    //   Jump -> afterOriginalSetText
+    // On no match, control falls through to the original SetText(In Text).
+    // Clone a variable-read expression (instance/local/default) reusing its property pointer.
+    static KismetExpression CloneVarRead(KismetExpression e)
+    {
+        var ptr = (e as EX_VariableBase)?.Variable;
+        if (ptr == null) return null;
+        return e switch
+        {
+            EX_InstanceVariable => new EX_InstanceVariable { Variable = ptr },
+            EX_LocalVariable => new EX_LocalVariable { Variable = ptr },
+            EX_LocalOutVariable => new EX_LocalOutVariable { Variable = ptr },
+            _ => new EX_LocalVariable { Variable = ptr }
+        };
+    }
+
+    static int InjectMap3(string inputDir, string mapJson) => InjectRender(inputDir, mapJson, "WBP_DropdownButtonContent.uasset", "TextBlock_25");
+
+    // Generalized render-only translation: at `<tbFilter>.SetText(<var>)`, branch to SetText(Text("ZH"))
+    // for mapped names, leaving the underlying variable (the functional key) untouched.
+    static int InjectRender(string inputDir, string mapJson, string fileName, string tbFilter)
+    {
+        var raw = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(mapJson)) ?? new Dictionary<string, string>();
+        var map = raw.Where(kv => !string.IsNullOrEmpty(kv.Value) && kv.Value != kv.Key).ToList();
+        if (map.Count == 0) { Console.Error.WriteLine("map 为空"); return 2; }
+        string target = UAssets(inputDir).FirstOrDefault(p => Path.GetFileName(p) == fileName);
+        if (target == null) { Console.Error.WriteLine($"找不到 {fileName}"); return 2; }
+        var asset = Load(target);
+
+        FPackageIndex ImpIdx(string obj) { for (int i = 0; i < asset.Imports.Count; i++) if (Nm(asset.Imports[i].ObjectName) == obj) return FPackageIndex.FromImport(i); return null; }
+        var enginePkg = ImpIdx("/Script/Engine") ?? asset.AddImport(new Import("/Script/CoreUObject", "Package", new FPackageIndex(0), "/Script/Engine", false, asset));
+        FPackageIndex EnsureClass(string cls) => ImpIdx(cls) ?? asset.AddImport(new Import("/Script/CoreUObject", "Class", enginePkg, cls, false, asset));
+        FPackageIndex EnsureFunc(string fn, FPackageIndex cls) => ImpIdx(fn) ?? asset.AddImport(new Import("/Script/CoreUObject", "Object", cls, fn, false, asset));
+        var convIdx = EnsureFunc("Conv_TextToString", EnsureClass("KismetTextLibrary"));
+        var eqIdx = EnsureFunc("EqualEqual_StrStr", EnsureClass("KismetStringLibrary"));
+
+        // find the statement `<tbFilter TextBlock>.SetText(<var read>)`
+        StructExport se = null; int si = -1; EX_Context origCtx = null; EX_VirtualFunction origSet = null;
+        foreach (var exp in asset.Exports)
+        {
+            if (exp is not StructExport s || s.ScriptBytecode == null) continue;
+            for (int i = 0; i < s.ScriptBytecode.Length; i++)
+                if (s.ScriptBytecode[i] is EX_Context c && c.ObjectExpression is EX_InstanceVariable tb && PtrName(tb.Variable).Contains(tbFilter)
+                    && c.ContextExpression is EX_VirtualFunction vf && Nm(vf.VirtualFunctionName) == "SetText"
+                    && vf.Parameters != null && vf.Parameters.Length >= 1 && vf.Parameters[0] is EX_VariableBase)
+                { se = s; si = i; origCtx = c; origSet = vf; break; }
+            if (se != null) break;
+        }
+        if (se == null) { Console.Error.WriteLine($"找不到 {tbFilter}.SetText(<var>) 语句"); return 3; }
+        var tbPtr = ((EX_InstanceVariable)origCtx.ObjectExpression).Variable;
+        var origArg = origSet.Parameters[0];
+        var setFName = origSet.VirtualFunctionName;
+
+        var (allPre, total) = VisitAll(asset, se.ScriptBytecode);
+        var offPre = new Dictionary<KismetExpression, uint>(); foreach (var (e, o) in allPre) offPre[e] = o;
+        uint P = offPre[origCtx];                          // insertion offset (before original SetText)
+        var origNext = se.ScriptBytecode[si + 1];          // statement after original SetText
+
+        var newStmts = new List<KismetExpression>();
+        var jins = new List<EX_JumpIfNot>();
+        var jmps = new List<EX_Jump>();
+        foreach (var kv in map)
+        {
+            var conv = new EX_CallMath { StackNode = convIdx, Parameters = new KismetExpression[] { CloneVarRead(origArg) } };
+            var cmp = new EX_CallMath { StackNode = eqIdx, Parameters = new KismetExpression[] { conv, new EX_StringConst { Value = kv.Key } } };
+            var jin = new EX_JumpIfNot { CodeOffset = 0, BooleanExpression = cmp };
+            var setZh = new EX_VirtualFunction { VirtualFunctionName = setFName, Parameters = new KismetExpression[] { new EX_TextConst { Value = new FScriptText { TextLiteralType = EBlueprintTextLiteralType.InvariantText, InvariantLiteralString = new EX_UnicodeStringConst { Value = kv.Value } } } } };
+            var ctxZh = new EX_Context { ObjectExpression = new EX_InstanceVariable { Variable = tbPtr }, PropertyType = origCtx.PropertyType, RValuePointer = origCtx.RValuePointer, ContextExpression = setZh, Offset = setZh.GetSize(asset) };
+            var jmp = new EX_Jump { CodeOffset = 0 };
+            newStmts.Add(jin); newStmts.Add(ctxZh); newStmts.Add(jmp);
+            jins.Add(jin); jmps.Add(jmp);
+        }
+        var listStmts = se.ScriptBytecode.ToList();
+        listStmts.InsertRange(si, newStmts);            // insert BEFORE original SetText
+        se.ScriptBytecode = listStmts.ToArray();
+
+        int D = newStmts.Sum(s => (int)s.GetSize(asset));
+        var deltas = new List<(uint pos, int delta)> { (P, D) };   // shift offsets strictly > P; jumps to P land on new code
+        foreach (var (e, o) in allPre) foreach (var (get, set) in AbsOffsets(e)) set(ShiftBy(get(), deltas));
+        var fnDeltas = new Dictionary<string, List<(uint pos, int delta)>> { { Nm(se.ObjectName) ?? "", deltas } };
+        foreach (var exp in asset.Exports)
+        {
+            if (exp is not StructExport s2 || s2.ScriptBytecode == null) continue;
+            var (all2, _) = VisitAll(asset, s2.ScriptBytecode);
+            foreach (var (e, o) in all2) if (e is EX_FinalFunction ff && ff.Parameters != null && ff.Parameters.Length > 0 && ff.Parameters[0] is EX_IntConst ic)
+            { string tgt = ResolveIdx(asset, ff.StackNode); if (tgt != null && fnDeltas.TryGetValue(tgt, out var dl)) ic.Value = (int)ShiftBy((uint)ic.Value, dl); }
+        }
+
+        var (allPost, _) = VisitAll(asset, se.ScriptBytecode);
+        var offPost = new Dictionary<KismetExpression, uint>(); foreach (var (e, o) in allPost) offPost[e] = o;
+        uint afterOrig = offPost[origNext];
+        for (int i = 0; i < jins.Count; i++)
+        {
+            jins[i].CodeOffset = (i + 1 < jins.Count) ? offPost[(KismetExpression)jins[i + 1]] : offPost[origCtx]; // no match -> next check, or original SetText
+            jmps[i].CodeOffset = afterOrig;                                                                        // match -> skip original SetText
+        }
+
+        int bad = VerifyBytecode(asset);
+        Console.WriteLine($"insert D={D} P={P} entries={map.Count} verify-fail={bad}");
+        if (bad > 0) { Console.Error.WriteLine("校验不过"); return 4; }
+        asset.Write(target);
+        try { var rt = new UAsset(target, EV, Maps); if (VerifyBytecode(rt) > 0) throw new Exception("post-write inconsistent"); }
+        catch (Exception ve) { Console.Error.WriteLine("重解析失败: " + ve.Message); return 5; }
+        Console.WriteLine($"[ok] 渲染层查表注入完成（In Text 不动，{map.Count} 条）");
+        return 0;
+    }
+
+    // Translate a name embedded in `Concat(nameVar, "<suffix>")` (e.g. the "{name} changes" title):
+    // reassign the display-only name String local to ZH just before the concat. Safe iff that local
+    // feeds only the display concat (verified for WBP_Editor's Text_DetailsTitle).
+    static int InjectConcat(string inputDir, string mapJson, string fileName, string suffix)
+    {
+        var raw = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(mapJson)) ?? new Dictionary<string, string>();
+        var map = raw.Where(kv => !string.IsNullOrEmpty(kv.Value) && kv.Value != kv.Key).ToList();
+        if (map.Count == 0) { Console.Error.WriteLine("map 为空"); return 2; }
+        string target = UAssets(inputDir).FirstOrDefault(p => Path.GetFileName(p) == fileName);
+        if (target == null) { Console.Error.WriteLine($"找不到 {fileName}"); return 2; }
+        var asset = Load(target);
+
+        FPackageIndex ImpIdx(string obj) { for (int i = 0; i < asset.Imports.Count; i++) if (Nm(asset.Imports[i].ObjectName) == obj) return FPackageIndex.FromImport(i); return null; }
+        var enginePkg = ImpIdx("/Script/Engine") ?? asset.AddImport(new Import("/Script/CoreUObject", "Package", new FPackageIndex(0), "/Script/Engine", false, asset));
+        FPackageIndex EnsureClass(string cls) => ImpIdx(cls) ?? asset.AddImport(new Import("/Script/CoreUObject", "Class", enginePkg, cls, false, asset));
+        FPackageIndex EnsureFunc(string fn, FPackageIndex cls) => ImpIdx(fn) ?? asset.AddImport(new Import("/Script/CoreUObject", "Object", cls, fn, false, asset));
+        var eqIdx = EnsureFunc("EqualEqual_StrStr", EnsureClass("KismetStringLibrary"));
+
+        // find `Let X = Concat_StrStr(nameVar, "<suffix>")`
+        StructExport se = null; int ci = -1; KismetExpression nameArg = null;
+        foreach (var exp in asset.Exports)
+        {
+            if (exp is not StructExport s || s.ScriptBytecode == null) continue;
+            for (int i = 0; i < s.ScriptBytecode.Length; i++)
+                if (s.ScriptBytecode[i] is EX_Let lt && lt.Expression is EX_CallMath cm && ResolveIdx(asset, cm.StackNode) == "Concat_StrStr"
+                    && cm.Parameters != null && cm.Parameters.Length >= 2 && ExprStr(cm.Parameters[1]) == suffix
+                    && cm.Parameters[0] is EX_VariableBase)
+                { se = s; ci = i; nameArg = cm.Parameters[0]; break; }
+            if (se != null) break;
+        }
+        if (se == null) { Console.Error.WriteLine($"找不到 Concat(name, \"{suffix}\") 语句"); return 3; }
+        var namePtr = ((EX_VariableBase)nameArg).Variable;
+
+        var (allPre, total) = VisitAll(asset, se.ScriptBytecode);
+        var offPre = new Dictionary<KismetExpression, uint>(); foreach (var (e, o) in allPre) offPre[e] = o;
+        var origConcat = se.ScriptBytecode[ci];
+        uint P = offPre[origConcat];
+
+        var newStmts = new List<KismetExpression>();
+        var jins = new List<EX_JumpIfNot>();
+        foreach (var kv in map)
+        {
+            var cmp = new EX_CallMath { StackNode = eqIdx, Parameters = new KismetExpression[] { CloneVarRead(nameArg), new EX_StringConst { Value = kv.Key } } };
+            var jin = new EX_JumpIfNot { CodeOffset = 0, BooleanExpression = cmp };
+            var let = new EX_Let { Value = namePtr, Variable = CloneVarRead(nameArg), Expression = new EX_UnicodeStringConst { Value = kv.Value } };
+            newStmts.Add(jin); newStmts.Add(let); jins.Add(jin);
+        }
+        var listStmts = se.ScriptBytecode.ToList();
+        listStmts.InsertRange(ci, newStmts);
+        se.ScriptBytecode = listStmts.ToArray();
+
+        int D = newStmts.Sum(s => (int)s.GetSize(asset));
+        var deltas = new List<(uint pos, int delta)> { (P == 0 ? 0u : P - 1, D) };
+        foreach (var (e, o) in allPre) foreach (var (get, set) in AbsOffsets(e)) set(ShiftBy(get(), deltas));
+        var fnDeltas = new Dictionary<string, List<(uint pos, int delta)>> { { Nm(se.ObjectName) ?? "", deltas } };
+        foreach (var exp in asset.Exports)
+        {
+            if (exp is not StructExport s2 || s2.ScriptBytecode == null) continue;
+            var (all2, _) = VisitAll(asset, s2.ScriptBytecode);
+            foreach (var (e, o) in all2) if (e is EX_FinalFunction ff && ff.Parameters != null && ff.Parameters.Length > 0 && ff.Parameters[0] is EX_IntConst ic)
+            { string tgt = ResolveIdx(asset, ff.StackNode); if (tgt != null && fnDeltas.TryGetValue(tgt, out var dl)) ic.Value = (int)ShiftBy((uint)ic.Value, dl); }
+        }
+        var (allPost, _) = VisitAll(asset, se.ScriptBytecode);
+        var offPost = new Dictionary<KismetExpression, uint>(); foreach (var (e, o) in allPost) offPost[e] = o;
+        for (int i = 0; i < jins.Count; i++)
+            jins[i].CodeOffset = (i + 1 < jins.Count) ? offPost[(KismetExpression)jins[i + 1]] : offPost[origConcat];
+
+        int bad = VerifyBytecode(asset);
+        Console.WriteLine($"insert D={D} P={P} entries={map.Count} verify-fail={bad}");
+        if (bad > 0) { Console.Error.WriteLine("校验不过"); return 4; }
+        asset.Write(target);
+        try { var rt = new UAsset(target, EV, Maps); if (VerifyBytecode(rt) > 0) throw new Exception("post-write inconsistent"); }
+        catch (Exception ve) { Console.Error.WriteLine("重解析失败: " + ve.Message); return 5; }
+        Console.WriteLine($"[ok] 标题名字查表注入完成（{map.Count} 条）");
+        return 0;
+    }
+
+    // Diagnostic: add ONLY the Conv_TextToString import chain (unused), no bytecode change.
+    static int InjectImportOnly(string inputDir)
+    {
+        string target = UAssets(inputDir).FirstOrDefault(p => Path.GetFileName(p) == "WBP_DropdownButtonContent.uasset");
+        if (target == null) { Console.Error.WriteLine("找不到 widget"); return 2; }
+        var asset = Load(target);
+        FPackageIndex ImpIdx(string obj) { for (int i = 0; i < asset.Imports.Count; i++) if (Nm(asset.Imports[i].ObjectName) == obj) return FPackageIndex.FromImport(i); return null; }
+        var enginePkg = ImpIdx("/Script/Engine") ?? asset.AddImport(new Import("/Script/CoreUObject", "Package", new FPackageIndex(0), "/Script/Engine", false, asset));
+        var ktlClass = ImpIdx("KismetTextLibrary") ?? asset.AddImport(new Import("/Script/CoreUObject", "Class", enginePkg, "KismetTextLibrary", false, asset));
+        var convFunc = ImpIdx("Conv_TextToString") ?? asset.AddImport(new Import("/Script/CoreUObject", "Object", ktlClass, "Conv_TextToString", false, asset));
+        Console.WriteLine($"engine={enginePkg.Index} ktl={ktlClass.Index} conv={convFunc.Index}");
+        asset.Write(target);
+        Console.WriteLine("[ok] 仅加 import（未使用），字节码未动");
+        return 0;
+    }
+
+    // Diagnostic: inject a SwitchValue with a TYPED index (In Text, FText) and an always-match case,
+    // NO import / NO CallMath. Isolates "SwitchValue execution + offsets" from "Conv_TextToString".
+    static int InjectSwTest(string inputDir, string testText)
+    {
+        string target = UAssets(inputDir).FirstOrDefault(p => Path.GetFileName(p) == "WBP_DropdownButtonContent.uasset");
+        if (target == null) { Console.Error.WriteLine("找不到 widget"); return 2; }
+        var asset = Load(target);
+        var fnDeltas = new Dictionary<string, List<(uint pos, int delta)>>();
+        var mySwitches = new List<EX_SwitchValue>();
+        int edits = 0;
+
+        foreach (var exp in asset.Exports)
+        {
+            if (exp is not StructExport se || se.ScriptBytecode == null) continue;
+            var (all, total) = VisitAll(asset, se.ScriptBytecode);
+            var preOff = new Dictionary<KismetExpression, uint>();
+            foreach (var (e, o) in all) preOff[e] = o;
+            var deltas = new List<(uint pos, int delta)>();
+            foreach (var (e, o) in all)
+            {
+                if (e is EX_VirtualFunction vf && Nm(vf.VirtualFunctionName) == "SetText"
+                    && vf.Parameters != null && vf.Parameters.Length >= 1
+                    && vf.Parameters[0] is EX_InstanceVariable iv && PtrName(iv.Variable).Contains("In Text"))
+                {
+                    var old = vf.Parameters[0];
+                    if (!preOff.TryGetValue(old, out uint pos)) continue;
+                    var ptr = ((EX_InstanceVariable)old).Variable;
+                    EX_InstanceVariable MkIn() => new EX_InstanceVariable { Variable = ptr };
+                    var termZh = new EX_TextConst { Value = new FScriptText { TextLiteralType = EBlueprintTextLiteralType.InvariantText, InvariantLiteralString = new EX_UnicodeStringConst { Value = testText } } };
+                    var sw = new EX_SwitchValue { EndGotoOffset = 0, IndexTerm = MkIn(), Cases = new[] { new FKismetSwitchCase(MkIn(), 0u, termZh) }, DefaultTerm = MkIn() };
+                    vf.Parameters[0] = sw;
+                    mySwitches.Add(sw);
+                    deltas.Add((pos, (int)sw.GetSize(asset) - (int)old.GetSize(asset)));
+                    edits++;
+                }
+            }
+            if (deltas.Count == 0) continue;
+            foreach (var (e, o) in all) foreach (var (get, set) in AbsOffsets(e)) set(ShiftBy(get(), deltas));
+            foreach (var (e, o) in all) switch (e) { case EX_Context c: c.Offset = c.ContextExpression.GetSize(asset); break; case EX_Skip s: s.CodeOffset = s.SkipExpression.GetSize(asset); break; }
+            fnDeltas[Nm(exp.ObjectName)] = deltas;
+        }
+        if (edits == 0) { Console.Error.WriteLine("no inject point"); return 3; }
+        foreach (var exp in asset.Exports)
+        {
+            if (exp is not StructExport se || se.ScriptBytecode == null) continue;
+            var (all, _) = VisitAll(asset, se.ScriptBytecode);
+            foreach (var (e, o) in all) if (e is EX_FinalFunction ff && ff.Parameters != null && ff.Parameters.Length > 0 && ff.Parameters[0] is EX_IntConst ic) { string tgt = ResolveIdx(asset, ff.StackNode); if (tgt != null && fnDeltas.TryGetValue(tgt, out var dl)) ic.Value = (int)ShiftBy((uint)ic.Value, dl); }
+        }
+        foreach (var exp in asset.Exports)
+        {
+            if (exp is not StructExport se || se.ScriptBytecode == null) continue;
+            var (all, _) = VisitAll(asset, se.ScriptBytecode);
+            var offOf = new Dictionary<KismetExpression, uint>();
+            foreach (var (e, o) in all) offOf[e] = o;
+            foreach (var (e, o) in all) if (e is EX_SwitchValue sw && mySwitches.Contains(sw))
+            {
+                sw.EndGotoOffset = o + sw.GetSize(asset);
+                for (int i = 0; i < sw.Cases.Length; i++) sw.Cases[i].NextOffset = offOf[(i + 1 < sw.Cases.Length) ? sw.Cases[i + 1].CaseIndexValueTerm : sw.DefaultTerm];
+                Console.WriteLine($"  switch @{o}: EndGoto={sw.EndGotoOffset} nexts=[{string.Join(",", sw.Cases.Select(c => c.NextOffset))}]");
+            }
+        }
+        int bad = VerifyBytecode(asset);
+        Console.WriteLine($"verify-fail: {bad}");
+        if (bad > 0) return 4;
+        asset.Write(target);
+        try { var rt = new UAsset(target, EV, Maps); if (VerifyBytecode(rt) > 0) throw new Exception("post-write inconsistent"); }
+        catch (Exception ve) { Console.Error.WriteLine($"reparse fail: {ve.Message}"); return 5; }
+        Console.WriteLine($"[ok] SwitchValue 诊断注入完成（typed index, no import）");
         return 0;
     }
 
@@ -520,6 +1224,7 @@ internal static class Program
     {
         [""] = new HashSet<string> { "Showing scenarios: " },
         ["WBP_MenuScenarioEntry"] = new HashSet<string> { "Set Category", "Remove" },
+        ["WBP_Editor"] = new HashSet<string> { " changes" },
     };
 
     static bool IsBareSafe(string rel, string cur)

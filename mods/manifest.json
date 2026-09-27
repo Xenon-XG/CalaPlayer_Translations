@@ -1,10 +1,10 @@
 {
   "name": "XG_Translations",
   "folder": "mods",
-  "version": "1.1",
+  "version": "1.2",
   "author": "Xenon-XG",
   "kind": "ui_text",
-  "note": "只改 WBP_/BP_ 界面蓝图里的文字(FText/StrProperty/蓝图字节码)；不改任何 DA_* 数据表。files 为本 mod 改过的 legacy 资产，须按此相对路径合入统一目录后 retoc to-zen 成单个 _P（retoc 靠目录结构还原包 id，不能拍平）。",
+  "note": "只改 WBP_/BP_ 界面蓝图：UI 文字(FText/StrProperty/蓝图字节码) + 角色名「只翻显示」注入(resname_display，在 SetText 前按词表分支换中文，底层键保持英文；为此给这些包新增了 KismetTextLibrary/KismetStringLibrary 的函数 import)。不改任何 DA_* 数据表。files 为改过的 legacy 资产，须按相对路径合入统一目录后 retoc to-zen 成单个 _P（不能拍平）。",
   "targets": {},
   "packages": [
     {
@@ -28,7 +28,8 @@
       "edits": {
         "ftext": 2,
         "strprop": 0,
-        "bytecode": 0
+        "bytecode": 0,
+        "resname_display": true
       }
     },
     {
@@ -56,6 +57,15 @@
       }
     },
     {
+      "path": "/Game/CalaPlayer/UI/EditorUI/Widgets/WBP_DropdownButtonContent",
+      "edits": {
+        "ftext": 0,
+        "strprop": 0,
+        "bytecode": 0,
+        "resname_display": true
+      }
+    },
+    {
       "path": "/Game/CalaPlayer/UI/EditorUI/Widgets/WBP_DropdownButtonContentMorph",
       "edits": {
         "ftext": 1,
@@ -68,7 +78,8 @@
       "edits": {
         "ftext": 17,
         "strprop": 0,
-        "bytecode": 16
+        "bytecode": 17,
+        "resname_display": true
       }
     },
     {
@@ -84,7 +95,8 @@
       "edits": {
         "ftext": 1,
         "strprop": 0,
-        "bytecode": 0
+        "bytecode": 0,
+        "resname_display": true
       }
     },
     {
@@ -108,7 +120,8 @@
       "edits": {
         "ftext": 6,
         "strprop": 0,
-        "bytecode": 0
+        "bytecode": 0,
+        "resname_display": true
       }
     },
     {
@@ -183,6 +196,8 @@
     "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_CreateCharacterPopup.uexp",
     "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_DetailsPanel.uasset",
     "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_DetailsPanel.uexp",
+    "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_DropdownButtonContent.uasset",
+    "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_DropdownButtonContent.uexp",
     "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_DropdownButtonContentMorph.uasset",
     "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_DropdownButtonContentMorph.uexp",
     "CalaPlayer/Content/CalaPlayer/UI/EditorUI/Widgets/WBP_Editor.uasset",

@@ -69,7 +69,6 @@
   "\r\nCharacter is hidden\r\n": "\r\n角色已隐藏\r\n",
   "\r\nNo animations\r\n": "\r\n无动画\r\n",
   "\r\nNo expressions\r\n": "\r\n无表情\r\n",
-
   "All": "全部",
   "All unsaved changes will be lost.": "所有未保存的更改都将丢失。",
   "BGM / Ambient": "背景音乐 / 环境音",
@@ -95,5 +94,6 @@
   "Sound": "音效",
   "Text": "文本",
   "Contextual Title": "详情",
-  "Showing scenarios: ": "显示剧本: "
+  "Showing scenarios: ": "显示剧本: ",
+  " changes": " 面板"
 }

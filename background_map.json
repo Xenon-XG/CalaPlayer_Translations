@@ -163,5 +163,9 @@
   "T_Evni_BP4_Background_10B": "柯西街区·夜晚",
   "T_Evni_BP5_Background_01_a": "光柱观测室",
   "T_Evni_BP5_Background_02": "高层会议室",
-  "T_Evni_BP5_Background_03_b": "废弃走廊"
+  "T_Evni_BP5_Background_03_b": "废弃走廊",
+  "T_SolidColorBlack": "纯黑",
+  "T_SolidColorWhite": "纯白",
+  "Black": "纯黑色",
+  "WhiteSquareTexture": "纯白色"
 }

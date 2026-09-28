@@ -95,5 +95,13 @@
   "Text": "文本",
   "Contextual Title": "详情",
   "Showing scenarios: ": "显示剧本: ",
-  " changes": " 面板"
+  " changes": " 面板",
+  "Clear Old Expressions": "清除旧表情",
+  "Clone": "复制",
+  "Modify Background": "修改背景",
+  "Saturation": "饱和度",
+  "Tint": "色调",
+  "Okay": "确定",
+  "Warning": "警告",
+  "This scenario was made in newer version of CalaPlayer (v{Version}). Some of its features might not work properly in this version.": "此剧本由更新版本的 CalaPlayer（v{Version}）制作，部分功能在当前版本中可能无法正常使用。"
 }

@@ -1,0 +1,33 @@
+# 推送 PV<播放器版本>-v<mod版本> 格式的标签（如 PV0.1.1.140-v1.4）即自动发版：
+# 把 patch/ 里的 3 个补丁文件 + 安装说明打成 zip，用 release/notes/<标签>.md 作为说明创建 Release。
+name: Release
+
+on:
+  push:
+    tags: ['PV*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check release notes
+        run: test -f "release/notes/${GITHUB_REF_NAME}.md" || { echo "缺少 release/notes/${GITHUB_REF_NAME}.md"; exit 1; }
+
+      - name: Package
+        run: |
+          mkdir -p out
+          zip -j "out/CalaPlayer_ZH_CN_${GITHUB_REF_NAME}.zip" \
+            patch/CalaPlayer-Windows_P.pak patch/CalaPlayer-Windows_P.ucas patch/CalaPlayer-Windows_P.utoc \
+            "release/安装说明.txt"
+          unzip -l out/*.zip
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          name: ${{ github.ref_name }}
+          body_path: release/notes/${{ github.ref_name }}.md
+          files: out/*.zip

@@ -4,7 +4,9 @@
 
 角色名、动作、表情、背景音乐、环境音、音效、背景的名字也显示为中文。这些只改「显示」，剧本里存的仍是英文原名，旧剧本照常可用，卸载汉化后剧本也不受影响。
 
-> 本项目为**粉丝汉化补丁**，仅供学习与个人使用，仅适配CalaPlayer v0.1.0.134。
+> 本项目为**粉丝汉化补丁**，仅供学习与个人使用。当前 `patch/` 适配 CalaPlayer v0.1.1.140。
+>
+> 版本号格式为 `PV<适用的播放器版本>-v<汉化版本>`，例如 `PV0.1.1.140-v1.4`。旧版播放器请到 [Releases](../../releases) 下载对应版本（v0.1.0.134 → `v1.3`）。
 
 ---
 
@@ -68,3 +70,9 @@ CalaPlayer\Content\Paks\
 
 ## 致谢
 - [retoc](https://github.com/trumank/retoc) · [UAssetAPI](https://github.com/atenfyr/UAssetAPI)
+
+---
+
+## 📦 发版（自动）
+
+推送 `PV<播放器版本>-v<汉化版本>` 格式的标签即由 GitHub Actions（[`.github/workflows/release.yml`](.github/workflows/release.yml)）自动发版：把 `patch/` 的 3 个补丁文件和 [`release/安装说明.txt`](release/安装说明.txt) 打成 zip，以 `release/notes/<标签>.md` 为说明创建 Release。

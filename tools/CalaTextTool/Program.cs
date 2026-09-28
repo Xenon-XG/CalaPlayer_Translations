@@ -61,6 +61,7 @@ internal static class Program
             if (args.Length >= 3 && args[0] == "bcfuncs") { Maps = TryLoadUsmap(args.Length >= 4 ? args[3] : null); return BcFuncs(args[1], args[2]); }
             if (args.Length >= 3 && args[0] == "disasm") { Maps = TryLoadUsmap(args.Length >= 4 ? args[3] : null); return Disasm(args[1], args[2]); }
             if (args.Length >= 3 && args[0] == "injectlabel") { Maps = TryLoadUsmap(args.Length >= 4 ? args[3] : null); return InjectLabel(args[1], args[2]); }
+            if (args.Length >= 3 && args[0] == "names") { Maps = TryLoadUsmap(args.Length >= 4 ? args[3] : null); foreach (var pth in UAssets(args[1])) if (Path.GetFileName(pth).Contains(args[2])) { var a = Load(pth); foreach (var n in a.GetNameMapIndexList()) Console.WriteLine(n.Value); } return 0; }
             if (args.Length >= 3 && args[0] == "props") { Maps = TryLoadUsmap(args.Length >= 4 ? args[3] : null); return Props(args[1], args[2]); }
             if (args.Length >= 3 && args[0] == "exports") { Maps = TryLoadUsmap(args.Length >= 4 ? args[3] : null); return Exports(args[1], args[2]); }
             if (args.Length >= 3 && args[0] == "imports") { Maps = TryLoadUsmap(args.Length >= 4 ? args[3] : null); return Imports(args[1], args[2]); }
@@ -423,7 +424,7 @@ internal static class Program
             {
                 string cls = ResolveIdx(asset, exp.ClassIndex) ?? "";
                 if (classFilter.Length == 0 || cls.Contains(classFilter))
-                    Console.WriteLine($"{Path.GetFileNameWithoutExtension(path)}\t{cls}\t{Nm(exp.ObjectName)}");
+                    Console.WriteLine($"{Path.GetFileNameWithoutExtension(path)}\t{cls}\t{exp.ObjectName}");
             }
         }
         return 0;

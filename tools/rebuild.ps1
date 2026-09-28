@@ -2,7 +2,8 @@
 # 改完 translations.json / 各名称表后运行本脚本，即可重新打包并安装到游戏。
 # -NoPause：不在结束/出错时等待回车（供 GUI 无人值守调用）。
 # -NoInstall：只打包到 mod_work\_rebuild_pak，不装进游戏（自检用）。
-param([switch]$NoPause, [switch]$NoInstall)
+# -Version：目标播放器版本（对应根目录的「CalaPlayer v<版本>」文件夹），不填 = 最新版。
+param([switch]$NoPause, [switch]$NoInstall, [string]$Version)
 $ErrorActionPreference = 'Stop'
 try { [Console]::OutputEncoding = [System.Text.Encoding]::UTF8 } catch {}
 
@@ -15,11 +16,17 @@ $dotnet = 'C:\Users\XG\dotnet10\dotnet.exe'
 $tool   = Join-Path $root 'tool\CalaTextTool\bin\Release\net10.0\CalaTextTool.dll'
 $usmap  = First @((Join-Path $kit 'mappings\CalaPlayer-UE5.7.usmap'), (Join-Path $root 'tool\mappings\CalaPlayer-UE5.7.usmap'))
 $retoc  = Join-Path $root 'tool\retoc\retoc.exe'
-$base   = Join-Path $root 'mod_work\base_bp'
-$map    = DataFile 'translations.json'
+$map   = DataFile 'translations.json'
 $edited = Join-Path $root 'mod_work\_rebuild_edited'
 $out    = Join-Path $root 'mod_work\_rebuild_pak'
-$paks   = Join-Path $root 'CalaPlayer\Content\Paks'
+
+# 每个播放器版本一个文件夹：CalaPlayer v0.1.1.140\CalaPlayer\Content\Paks；基础资源按版本放 mod_work\base_bp_<版本>
+$games = Get-ChildItem $root -Directory -Filter 'CalaPlayer v*' | Where-Object { $_.Name -match '^CalaPlayer v(\d+(\.\d+)+)$' } |
+         Sort-Object { [version]($_.Name -replace '^CalaPlayer v','') }
+if (-not $Version) { if ($games) { $Version = ($games[-1].Name -replace '^CalaPlayer v','') } }
+$game   = Join-Path $root "CalaPlayer v$Version"
+$paks   = Join-Path $game 'CalaPlayer\Content\Paks'
+$base   = Join-Path $root "mod_work\base_bp_$Version"
 
 function Fail($msg) { Write-Host "[X] $msg" -ForegroundColor Red; if (-not $NoPause) { Read-Host '按回车退出' }; exit 1 }
 # 运行外部程序：stderr 也当普通日志输出（PowerShell 5.1 在 Stop 模式下会把原生 stderr 当成异常）
@@ -46,7 +53,14 @@ Write-Host '==============================================' -ForegroundColor Cya
 Write-Host ''
 
 if (-not $NoInstall -and (Get-Process -Name CalaPlayer -ErrorAction SilentlyContinue)) { Fail '请先完全关闭游戏 CalaPlayer，再运行本脚本。' }
-if (-not (Test-Path (Join-Path $base 'scriptobjects.bin'))) { Fail "缺少基础资源目录：$base" }
+if (-not $Version -or -not (Test-Path $paks)) { Fail "找不到游戏目录：$paks" }
+Write-Host "目标播放器版本：v$Version" -ForegroundColor Cyan
+if (-not (Test-Path (Join-Path $base 'scriptobjects.bin'))) {
+    # 新版本第一次打包：从游戏原版 Paks 提取界面蓝图（必须是没装汉化的原版，否则会读到自己的 mod）
+    if (Get-ChildItem $paks -Filter '*_P.*') { Fail "缺少基础资源 $base，且游戏目录里已有 _P 补丁；请先删掉 $paks 下的 *_P.* 再运行一次。" }
+    Write-Host "提取 v$Version 的界面蓝图到 $base ..." -ForegroundColor Yellow
+    Native '提取基础资源' $retoc to-legacy --filter BP_ $paks $base
+}
 if (-not (Test-Path $map)) { Fail "找不到翻译表：$map" }
 
 Write-Host '[1/5] 应用界面翻译表 ...' -ForegroundColor Yellow
